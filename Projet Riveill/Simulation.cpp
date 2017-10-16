@@ -1,3 +1,4 @@
+#include <ctime>
 #include "Simulation.h"
 
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
@@ -30,11 +31,11 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	this->obstacles.push_back(o);
 	this->fill_grid(o);
 
+    srand(time(NULL));
 	// Initialize personnes
 	int x, y;
 	for (int i = 0; i < people; i++) {
 		Personne* p;
-
 		// while we have not found a proper cell for our personne
 		while (1) {
 			x = rand() % GRID_SIZE_X;
