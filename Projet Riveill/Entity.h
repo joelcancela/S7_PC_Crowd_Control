@@ -15,11 +15,7 @@ protected:
 
 public:
 	Entity();
-	~Entity();
-
-	// Representation
-	virtual std::string to_string() = 0; // Pure virtual function makes
-                                         // this class Abstract class.
+	virtual ~Entity() = 0;
 
 	// Getters
 	unsigned int get_x();

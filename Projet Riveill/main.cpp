@@ -1,10 +1,11 @@
 #include <getopt.h>
 #include <cmath>
+#include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
-#include "main.h"
 
-#define ZOOM_FACTOR 1
+#define ZOOM_FACTOR 4
+
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
 
@@ -40,6 +41,7 @@ void crowd_control_draw_borders(SDL_Renderer *renderer) {
 
 /**
  * SDL Drawer for the hostage escape zone
+ * Static zone, not affected by ZOOM
  */
 void crowd_control_draw_escape_zone(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
@@ -57,31 +59,54 @@ void crowd_control_draw_escape_zone(SDL_Renderer *renderer) {
 }
 
 /**
+ * DRAW entities px by px
+ */
+void crowd_control_draw_entity(
+	SDL_Renderer* renderer,
+	Simulation* simulation,
+	Entity* e) {
+
+	std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
+	pos[0] = e->get_x() * ZOOM_FACTOR;
+	pos[1] = e->get_y() * ZOOM_FACTOR;
+
+	std::vector<unsigned int> size(2);	// Size of the obstacle
+	size[0] = e->get_size_x() * ZOOM_FACTOR;
+	size[1] = e->get_size_y() * ZOOM_FACTOR;
+
+	for (unsigned int x = 0; x < size[0]; ++x) {
+		for (unsigned int y = 0; y < size[1]; ++y) {
+			SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
+		}
+	}
+}
+
+/**
  * SDL Drawer for obstacles
  */
-void crowd_control_draw_obstacles(SDL_Renderer *renderer, Simulation *simulation) {
-    SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
-    std::vector<Entity *> obstacles = simulation->get_vObstacles();
+void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation) {
+	SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
+	std::vector<Entity*> obstacles = simulation->get_vObstacles();
 
-    for (unsigned int i = 0; i < obstacles.size(); ++i) {
-        Obstacle o = (*dynamic_cast<Obstacle *>(obstacles[i]));    // Dereference of the object
+	for (unsigned int i = 0; i < obstacles.size(); ++i) {
+		crowd_control_draw_entity(renderer, simulation, obstacles[i]);
+	}
 
-        std::vector<unsigned int> pos(2);                            // Position of the obstacle on the grid
-        pos[0] = o.get_x();
-        pos[1] = o.get_y();
+	SDL_RenderPresent(renderer);
+}
 
-        std::vector<unsigned int> size(2);                            // Size of the obstacle
-        size[0] = o.get_size_x();
-        size[1] = o.get_size_y();
+/**
+ * SDL Drawer for personnes
+ */
+void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation) {
+	SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
+	std::vector<Entity*> personnes = simulation->get_vPersonnes();
 
-        for (unsigned int x = 0; x < size[0]; ++x) {
-            for (unsigned int y = 0; y < size[1]; ++y) {
-                SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
-            }
-        }
-    }
+	for (unsigned int i = 0; i < personnes.size(); ++i) {
+		crowd_control_draw_entity(renderer, simulation, personnes[i]);
+	}
 
-    SDL_RenderPresent(renderer);
+	SDL_RenderPresent(renderer);
 }
 
 /**
@@ -123,14 +148,14 @@ int main(int argc, char *argv[]) {
     }
 
     // Var repository
-    bool end_of_simulation = false;                // Main loop
-    Simulation *simu = new Simulation(people, four_threads, bench_time);        // Simulation handle
+    bool end_of_simulation = false;				// Main loop
+    Simulation* simu = new Simulation(people,four_threads,bench_time);		// Simulation handle
 
     /* SDL */
-    SDL_Window *win = nullptr;                    // Main SDL window
+    SDL_Window *win = nullptr;					// Main SDL window
     SDL_Renderer *renderer = nullptr;
 
-    SDL_Event sdl_event;                        // SDL events
+    SDL_Event sdl_event;						// SDL events
 
     // SDL2 init
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -165,9 +190,9 @@ int main(int argc, char *argv[]) {
     }
 
     // Initial screen color is black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);    // Back in black. #ACDCROCKS
-    SDL_RenderClear(renderer);                        // Clear the current rendering target with the drawing color.
-    SDL_RenderPresent(renderer);                    // Up until now everything was drawn behind the scenes.
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);	// Back in black. #ACDCROCKS
+    SDL_RenderClear(renderer);						// Clear the current rendering target with the drawing color.
+    SDL_RenderPresent(renderer);					// Up until now everything was drawn behind the scenes.
     // This will show the new contents of the window.
     // Doc: update the screen with any rendering performed since the previous call.
 
@@ -190,16 +215,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Draw people
-        /*
-        for (i = 0; i < GRID_SIZE_Y; i++) {
-            for (j = 0; j < GRID_SIZE_Y; j++) {
-                if (simu->get_matrix()[i][j] != nullptr) {
-                    SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
-                    SDL_RenderDrawPoint(renderer, i, j);
-                }
-            }
-        }
-        */
+        crowd_control_draw_personnes(renderer, simu);
 
         // Update screen rendering
         SDL_RenderPresent(renderer);
