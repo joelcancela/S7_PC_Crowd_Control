@@ -4,7 +4,6 @@ project(Projet_Riveill)
 set(CMAKE_CXX_STANDARD 11)
 
 include_directories(libs/include)
-#main_basic.cpp
 set(SOURCE_FILES
         Entity.cpp
         Entity.h

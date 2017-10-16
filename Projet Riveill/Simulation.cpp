@@ -1,7 +1,10 @@
 #include "Simulation.h"
 
-Simulation::Simulation(unsigned int np)
+Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
 {
+	this->people = people;
+	this->four_threads_cond = four_threads_cond;
+	this->bench_time_cond = bench_time_cond;
 	// Update simulation properties
 
 	// Initialize obstacles
@@ -28,9 +31,8 @@ Simulation::Simulation(unsigned int np)
 	this->fill_grid(o);
 
 	// Initialize personnes
-	int max_p = (int)pow(2, np);
 	int x, y;
-	for (int i = 0; i < max_p; i++) {
+	for (int i = 0; i < people; i++) {
 		Personne* p;
 
 		// while we have not found a proper cell for our personne
