@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Personne.h" />
     <ClInclude Include="shared_header.h" />

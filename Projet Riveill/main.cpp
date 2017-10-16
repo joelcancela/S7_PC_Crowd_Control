@@ -1,5 +1,6 @@
 #include "shared_header.h"
 #include "Simulation.h"
+#include "main.h"
 
 #define ZOOM_FACTOR 1
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
@@ -36,8 +37,8 @@ void crowd_control_draw_borders(SDL_Renderer* renderer) {
 }
 
 /**
-* SDL Drawer for the hostage escape zone
-*/
+ * SDL Drawer for the hostage escape zone
+ */
 void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
 
@@ -54,6 +55,34 @@ void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
 }
 
 /**
+ * SDL Drawer for obstacles
+ */
+void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation) {
+	SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
+	std::vector<Entity*> obstacles = simulation->get_vObstacles();
+
+	for (unsigned int i = 0; i < obstacles.size(); ++i) {
+		Obstacle o = (*dynamic_cast<Obstacle*>(obstacles[i]));	// Dereference of the object
+
+		std::vector<unsigned int> pos(2);							// Position of the obstacle on the grid
+		pos[0] = o.get_x();
+		pos[1] = o.get_y();
+		
+		std::vector<unsigned int> size(2);							// Size of the obstacle
+		size[0] = o.get_size_x();
+		size[1] = o.get_size_y();
+
+		for (unsigned int x = 0; x < size[0]; ++x) {
+			for (unsigned int y = 0; y < size[1]; ++y) {
+				SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
+			}
+		}
+	}
+
+	SDL_RenderPresent(renderer);
+}
+
+/**
  * - We double the model size in order to have something more visible for the end-user.
  * - Moreover, we add a border of 2px to the scene
  * - Escape zone is 4px * 4px (we take in consideration the border of 2px)
@@ -63,6 +92,7 @@ int main(int argc, char *argv[])
 {
 	// Var repository
 	bool end_of_simulation = false;				// Main loop
+	Simulation* simu = new Simulation();		// Simulation handle
 
 	/* SDL */
 	SDL_Window *win = nullptr;					// Main SDL window
@@ -115,8 +145,9 @@ int main(int argc, char *argv[])
 	/* Draw escape zone #CSGO */
 	crowd_control_draw_escape_zone(renderer);
 
-	// Start simulation
-	Simulation* simu = new Simulation();
+	/* Draw obstacles */
+	crowd_control_draw_obstacles(renderer, simu);
+
 	while (!end_of_simulation) {
 
 		// Quit by event
@@ -138,11 +169,11 @@ int main(int argc, char *argv[])
 		}
 		*/
 
-		// Give us time to see the window changes.
-		SDL_Delay(100);
-
 		// Update screen rendering
 		SDL_RenderPresent(renderer);
+
+		// Give us time to see the window changes.
+		SDL_Delay(100);
 	}
 
 	// End Of Simulation

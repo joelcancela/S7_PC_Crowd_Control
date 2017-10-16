@@ -2,20 +2,21 @@
 
 Simulation::Simulation()
 {
-	// Initialize grid
-	this->obstacles.push_back(new Obstacle( ));
 
-	/*
-	Personne* p1 = new Personne(10, 10);
-	Personne* p2 = new Personne(20, 20);
-	
-	matrix[10][10] = p1;
-	matrix[20][20] = p2;
-	*/
+	// Initialize obstacles
+	this->obstacles.push_back(new Obstacle(20, 20));
+	this->obstacles.push_back(new Obstacle(76, 75));
+	this->obstacles.push_back(new Obstacle(230, 64));
+	this->obstacles.push_back(new Obstacle(450, 50));
+	this->obstacles.push_back(new Obstacle(150, 90));
 }
 
 Simulation::~Simulation()
 {
+	// Clean obstacles
+	for (unsigned int i = 0; i < this->obstacles.size(); i++) {
+		delete this->obstacles[i];
+	}
 }
 
 std::vector<Entity*> Simulation::get_vObstacles()

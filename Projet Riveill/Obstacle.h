@@ -10,7 +10,7 @@ class Obstacle : public Entity
 {
 
 public:
-	Obstacle(int position_x, int position_y);
+	Obstacle(unsigned int position_x, unsigned int position_y);
 	~Obstacle();
 
 	std::string to_string();
