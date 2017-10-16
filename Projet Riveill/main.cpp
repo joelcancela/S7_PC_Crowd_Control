@@ -2,7 +2,7 @@
 #include "shared_header.h"
 #include "Simulation.h"
 
-#define ZOOM_FACTOR 1
+#define ZOOM_FACTOR 4
 
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
@@ -65,8 +65,8 @@ void crowd_control_draw_entity(
 	Entity* e) {
 
 	std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
-	pos[0] = e->get_x();
-	pos[1] = e->get_y();
+	pos[0] = e->get_x() * ZOOM_FACTOR;
+	pos[1] = e->get_y() * ZOOM_FACTOR;
 
 	std::vector<unsigned int> size(2);	// Size of the obstacle
 	size[0] = e->get_size_x() * ZOOM_FACTOR;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 {
 	// Var repository
 	bool end_of_simulation = false;				// Main loop
-	Simulation* simu = new Simulation(6);		// Simulation handle
+	Simulation* simu = new Simulation(9);		// Simulation handle
 
 	/* SDL */
 	SDL_Window *win = nullptr;					// Main SDL window

@@ -8,19 +8,17 @@
 #define GRID_SIZE_X 512
 #define GRID_SIZE_Y 128
 
-/*
-using grid = std::array<std::array<int, sizeX> sizeY>;
-grid * ary = new grid;
-*/
-
 class Simulation
 {
+	bool dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = {}; // Model, false cell is free, true cell is not free
+
 	std::vector<Entity*> obstacles;
 	std::vector<Entity*> personnes;
 	
 public:
-	Simulation(unsigned int p);
+	Simulation(unsigned int np);
 	~Simulation();
+	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
 };
