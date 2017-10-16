@@ -625,6 +625,10 @@ Obstacle.h
 F:/2_School/Polytech/SI4/3_Projets/S7_PC_Crowd_Control/S7_PC_Crowd_Control/Projet Riveill/Obstacle.h
 
 F:/2_School/Polytech/SI4/3_Projets/S7_PC_Crowd_Control/S7_PC_Crowd_Control/Projet Riveill/main.cpp
+getopt.h
+-
+cmath
+-
 shared_header.h
 F:/2_School/Polytech/SI4/3_Projets/S7_PC_Crowd_Control/S7_PC_Crowd_Control/Projet Riveill/shared_header.h
 Simulation.h

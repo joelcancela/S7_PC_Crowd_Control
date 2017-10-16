@@ -9,10 +9,13 @@
 
 class Simulation
 {
+	double people;
+	int four_threads_cond;
+	int bench_time_cond;
 	std::vector<Entity*> obstacles;
 	
 public:
-	Simulation();
+	Simulation(double people, int four_threads_cond, int bench_time_cond);
 	~Simulation();
 	std::vector<Entity*> get_vObstacles();
 };
