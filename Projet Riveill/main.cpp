@@ -1,10 +1,10 @@
-#include <getopt.h>
+#include "getopt.h"
 #include <cmath>
 #include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
 
-#define ZOOM_FACTOR 4
+#define ZOOM_FACTOR 2
 
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
@@ -41,21 +41,22 @@ void crowd_control_draw_borders(SDL_Renderer *renderer) {
 
 /**
  * SDL Drawer for the hostage escape zone
- * Static zone, not affected by ZOOM
  */
-void crowd_control_draw_escape_zone(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
+void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
+	SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
 
-    for (int i = 0; i < 4; ++i) {
-        SDL_RenderDrawPoint(renderer, 0, i);
-        SDL_RenderDrawPoint(renderer, 1, i);
-    }
-    for (int i = 0; i < 4; ++i) {
-        SDL_RenderDrawPoint(renderer, i, 1);
-        SDL_RenderDrawPoint(renderer, i, 0);
-    }
-
-    SDL_RenderPresent(renderer);
+	// TOP
+	for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
+		SDL_RenderDrawPoint(renderer, 0, i);
+		SDL_RenderDrawPoint(renderer, 1, i);
+	}
+	// LEFT
+	for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
+		SDL_RenderDrawPoint(renderer, i, 0);
+		SDL_RenderDrawPoint(renderer, i, 1);
+	}
+	
+	SDL_RenderPresent(renderer);
 }
 
 /**
