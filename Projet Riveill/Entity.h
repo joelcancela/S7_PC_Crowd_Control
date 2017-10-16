@@ -15,17 +15,13 @@ protected:
 
 public:
 	Entity();
-	~Entity();
-
-	// Representation
-	virtual std::string to_string() = 0; // Pure virtual function makes
-                                         // this class Abstract class.
+	virtual ~Entity() = 0;
 
 	// Getters
-	unsigned int Entity::get_x();
-	unsigned int Entity::get_y();
+	unsigned int get_x();
+	unsigned int get_y();
 
-	unsigned int Entity::get_size_x();
-	unsigned int Entity::get_size_y();
+	unsigned int get_size_x();
+	unsigned int get_size_y();
 };
 
