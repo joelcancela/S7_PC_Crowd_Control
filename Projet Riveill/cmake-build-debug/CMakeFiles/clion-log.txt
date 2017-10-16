@@ -1,0 +1,4 @@
+C:\Users\SkyFox07\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\172.4343.16\bin\cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_SH=CMAKE_SH-NOTFOUND -G "CodeBlocks - MinGW Makefiles" "F:\2_School\Polytech\SI4\3_Projets\S7_PC_Crowd_Control\S7_PC_Crowd_Control\Projet Riveill"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: F:/2_School/Polytech/SI4/3_Projets/S7_PC_Crowd_Control/S7_PC_Crowd_Control/Projet Riveill/cmake-build-debug
