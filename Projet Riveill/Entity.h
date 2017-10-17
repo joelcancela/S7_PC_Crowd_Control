@@ -14,7 +14,6 @@ protected:
 	unsigned int pos_y = 0;
 
 public:
-	Entity();
 	virtual ~Entity() = 0;
 
 	// Getters
@@ -23,5 +22,8 @@ public:
 
 	unsigned int get_size_x();
 	unsigned int get_size_y();
+
+protected:
+	Entity();
 };
 
