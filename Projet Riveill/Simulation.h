@@ -13,7 +13,8 @@ class Simulation
 	double people;
 	int four_threads_cond;
 	int bench_time_cond;
-	bool dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = {}; // Model, false cell is free, true cell is not free
+
+	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr }; // Model, false cell is free, true cell is not free
 
 	std::vector<Entity*> obstacles;
 	std::vector<Entity*> personnes;

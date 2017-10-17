@@ -1,4 +1,3 @@
-#include <ctime>
 #include "Simulation.h"
 
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
@@ -31,7 +30,6 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	this->obstacles.push_back(o);
 	this->fill_grid(o);
 
-    srand(time(NULL));
 	// Initialize personnes
 	int x, y;
 	for (int i = 0; i < people; i++) {
@@ -41,7 +39,7 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 			x = rand() % GRID_SIZE_X;
 			y = rand() % GRID_SIZE_Y;
 
-			if (!this->dataGrid[x][y]) {
+			if (this->dataGrid[x][y] != nullptr) {
 				p = new Personne(x, y);
 				this->personnes.push_back(p);
 				this->fill_grid(p);
@@ -62,7 +60,7 @@ void Simulation::fill_grid(Entity* e) {
 
 	for (unsigned int x = 0; x < size[0]; ++x) {
 		for (unsigned int y = 0; y < size[1]; ++y) {
-			this->dataGrid[pos[0] + x][pos[1] + y] = true;
+			this->dataGrid[pos[0] + x][pos[1] + y] = e;
 		}
 	}
 }

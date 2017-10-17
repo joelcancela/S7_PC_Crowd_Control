@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include "Simulation.h"
 
-#define OBSTACLE_SIZE_REDUCTION_FACTOR 8
+#define OBSTACLE_SIZE_REDUCTION_FACTOR 10
 
 class Obstacle : public Entity
 {

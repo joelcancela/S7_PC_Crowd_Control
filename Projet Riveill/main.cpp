@@ -149,13 +149,13 @@ int main(int argc, char *argv[]) {
     }
 
     // Var repository
-    bool end_of_simulation = false;				// Main loop
+	srand(time(NULL));														// RNG
+    bool end_of_simulation = false;											// Main loop
     Simulation* simu = new Simulation(people,four_threads,bench_time);		// Simulation handle
 
     /* SDL */
     SDL_Window *win = nullptr;					// Main SDL window
     SDL_Renderer *renderer = nullptr;
-
     SDL_Event sdl_event;						// SDL events
 
     // SDL2 init
