@@ -39,7 +39,7 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 			x = rand() % GRID_SIZE_X;
 			y = rand() % GRID_SIZE_Y;
 
-			if (this->dataGrid[x][y] != nullptr) {
+			if (this->dataGrid[x][y] == nullptr) {
 				p = new Personne(x, y);
 				this->personnes.push_back(p);
 				this->fill_grid(p);
