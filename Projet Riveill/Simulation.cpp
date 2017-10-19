@@ -85,3 +85,7 @@ std::vector<Entity*> Simulation::get_vObstacles() {
 std::vector<Entity*> Simulation::get_vPersonnes() {
 	return this->personnes;
 }
+
+bool Simulation::isRunning() {
+	return (this->get_vPersonnes().size() > 0) ? true : false;
+}

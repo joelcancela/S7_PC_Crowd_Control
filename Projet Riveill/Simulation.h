@@ -14,7 +14,7 @@ class Simulation
 	int four_threads_cond;
 	int bench_time_cond;
 
-	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr }; // Model, false cell is free, true cell is not free
+	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr }; // Model
 
 	std::vector<Entity*> obstacles;
 	std::vector<Entity*> personnes;
@@ -25,5 +25,6 @@ public:
 	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
+	bool isRunning();
 };
 

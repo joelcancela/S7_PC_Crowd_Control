@@ -20,15 +20,6 @@ public:
 	void Execute();
 };
 
-// North-East
-class CommandNE : public Command {
-public:
-	CommandNE();
-	~CommandNE();
-
-	void Execute();
-};
-
 // West
 class CommandW : public Command {
 public:
@@ -37,40 +28,3 @@ public:
 
 	void Execute();
 };
-
-// EasT
-class CommandE : public Command {
-public:
-	CommandE();
-	~CommandE();
-
-	void Execute();
-};
-
-// South-West
-class CommandSW : public Command {
-public:
-	CommandSW();
-	~CommandSW();
-
-	void Execute();
-};
-
-// South
-class CommandS : public Command {
-public:
-	CommandS();
-	~CommandS();
-
-	void Execute();
-};
-
-// South-East
-class CommandSE : public Command {
-public:
-	CommandSE();
-	~CommandSE();
-
-	void Execute();
-};
-

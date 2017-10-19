@@ -110,15 +110,11 @@ void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation
 	SDL_RenderPresent(renderer);
 }
 
-/**
- * - We double the model size in order to have something more visible for the end-user.
- * - Moreover, we add a border of 2px to the scene
- * - Escape zone is 4px * 4px (we take in consideration the border of 2px)
- */
-
 int main(int argc, char *argv[]) {
+
     int opt, bench_time = 0, four_threads = 0;
     double people = 1;
+
     while ((opt = getopt(argc, argv, "p:t:m")) != -1) {
         switch (opt) {
             case 'p':
@@ -190,30 +186,38 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // Initial screen color is black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);	// Back in black. #ACDCROCKS
-    SDL_RenderClear(renderer);						// Clear the current rendering target with the drawing color.
-    SDL_RenderPresent(renderer);					// Up until now everything was drawn behind the scenes.
-    // This will show the new contents of the window.
-    // Doc: update the screen with any rendering performed since the previous call.
-
-    /* Draw borders */
-    crowd_control_draw_borders(renderer);
-
-    /* Draw escape zone #CSGO */
-    crowd_control_draw_escape_zone(renderer);
-
-    /* Draw obstacles */
-    crowd_control_draw_obstacles(renderer, simu);
-
     while (!end_of_simulation) {
+
+		end_of_simulation = !simu->isRunning();
+		if (end_of_simulation) {
+			continue;
+		}
 
         // Quit by event
         if (SDL_PollEvent(&sdl_event)) {
             if (sdl_event.type == SDL_QUIT) {
                 end_of_simulation = true;
+				continue;
             }
         }
+
+		/* Refresh screen */
+
+		// Back in black. #ACDCROCKS
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+		// Clear the current rendering target with the drawing color.
+		SDL_RenderClear(renderer);
+		// Render
+		SDL_RenderPresent(renderer);
+
+		/* Draw borders */
+		crowd_control_draw_borders(renderer);
+
+		/* Draw escape zone #CSGO */
+		crowd_control_draw_escape_zone(renderer);
+
+		/* Draw obstacles */
+		crowd_control_draw_obstacles(renderer, simu);
 
         // Draw people
         crowd_control_draw_personnes(renderer, simu);
