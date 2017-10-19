@@ -235,7 +235,15 @@ int main(int argc, char *argv[]) {
 
 		// Compute next frame
 		simu->tick();
+
+		// DBG
+		std::cout << "[Info] Tick";
+		getchar();
     }
+
+	// DBG
+	std::cout << "[Info] End of simulation";
+	getchar();
 
     // End Of Simulation
     delete simu;

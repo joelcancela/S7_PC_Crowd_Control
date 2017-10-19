@@ -68,14 +68,10 @@ void Simulation::fill_grid(Entity* e) {
 Simulation::~Simulation()
 {
 	// Clean obstacles
-	for (unsigned int i = 0; i < this->obstacles.size(); i++) {
-		delete this->obstacles[i];
-	}
+	this->obstacles.clear();
 
 	// Clean personnes
-	for (unsigned int i = 0; i < this->personnes.size(); i++) {
-		delete this->personnes[i];
-	}
+	this->personnes.clear();
 }
 
 std::vector<Entity*> Simulation::get_vObstacles() {
@@ -97,24 +93,28 @@ void Simulation::tick() {
 		return;
 	}
 
-	std::vector<Entity*> personnes = this->get_vPersonnes();
+	std::vector<Entity*>::iterator it;
 
 	// Move each personne to the escape zone
-	for (int i = 0; i < personnes.size(); i++) {
-		Personne* p = dynamic_cast<Personne*>(personnes[i]);
+	for (it = this->personnes.begin(); it != this->personnes.end(); it++) {
+		Personne* p = dynamic_cast<Personne*>(*it);
 		p->move();
 	}
 
 	// If someone has reached the escape zone, remove it from the list and from the dataModel
-	for (int i = 0; i < personnes.size(); i++) {
-		Personne* p = dynamic_cast<Personne*>(personnes[i]);
+	for (it = this->personnes.begin(); it != this->personnes.end();) {
+		Personne* p = dynamic_cast<Personne*>(*it);
+		
 		if (p->has_escaped()) {
 			// rm from dataModel
-			this->dataGrid[p->get_x][p->get_size_y] = nullptr;
+			this->dataGrid[p->get_x()][p->get_size_y()] = nullptr;
 			// rm from list
-			this->personnes.erase(this->personnes.begin()+i);
+			it = this->personnes.erase(it); // Fetch next valid iterator
 			// delete personne
 			delete p;
+		}
+		else {
+			it++; // Fetch next element in the list
 		}
 	}
 }
