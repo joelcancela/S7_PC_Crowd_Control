@@ -16,3 +16,11 @@ Personne::~Personne()
 std::string Personne::to_string() {
 	return "*";
 }
+
+bool Personne::has_escaped() {
+	return true;
+}
+
+void Personne::move() {
+
+}

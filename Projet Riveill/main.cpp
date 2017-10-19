@@ -188,45 +188,53 @@ int main(int argc, char *argv[]) {
 
     while (!end_of_simulation) {
 
+		/* START: UI SPECIFIC */
+
+		// Quit by event
+		if (SDL_PollEvent(&sdl_event)) {
+			if (sdl_event.type == SDL_QUIT) {
+				end_of_simulation = true;
+				continue;
+			}
+		}
+
+		// Back in black. #ACDCROCKS
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
+		// Clear the current rendering target with the drawing color.
+		SDL_RenderClear(renderer);
+		
+		// Render
+		SDL_RenderPresent(renderer);
+
+		// Draw borders
+		crowd_control_draw_borders(renderer);
+
+		// Draw escape zone
+		crowd_control_draw_escape_zone(renderer);
+
+		// Draw obstacles
+		crowd_control_draw_obstacles(renderer, simu);
+
+		// Draw people
+		crowd_control_draw_personnes(renderer, simu);
+
+		// Update screen rendering
+		SDL_RenderPresent(renderer);
+
+		// Give us time to see the window changes.
+		SDL_Delay(100);
+
+		/* END: OF UI SPECIFIC */
+
+		// Check simulation state
 		end_of_simulation = !simu->isRunning();
 		if (end_of_simulation) {
 			continue;
 		}
 
-        // Quit by event
-        if (SDL_PollEvent(&sdl_event)) {
-            if (sdl_event.type == SDL_QUIT) {
-                end_of_simulation = true;
-				continue;
-            }
-        }
-
-		/* Refresh screen */
-
-		// Back in black. #ACDCROCKS
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-		// Clear the current rendering target with the drawing color.
-		SDL_RenderClear(renderer);
-		// Render
-		SDL_RenderPresent(renderer);
-
-		/* Draw borders */
-		crowd_control_draw_borders(renderer);
-
-		/* Draw escape zone #CSGO */
-		crowd_control_draw_escape_zone(renderer);
-
-		/* Draw obstacles */
-		crowd_control_draw_obstacles(renderer, simu);
-
-        // Draw people
-        crowd_control_draw_personnes(renderer, simu);
-
-        // Update screen rendering
-        SDL_RenderPresent(renderer);
-
-        // Give us time to see the window changes.
-        SDL_Delay(100);
+		// Compute next frame
+		simu->tick();
     }
 
     // End Of Simulation

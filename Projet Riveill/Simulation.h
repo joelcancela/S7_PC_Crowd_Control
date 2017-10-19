@@ -26,5 +26,6 @@ public:
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
 	bool isRunning();
+	void tick();
 };
 

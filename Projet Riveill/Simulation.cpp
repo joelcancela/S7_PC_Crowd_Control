@@ -2,10 +2,10 @@
 
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
 {
+	// Update simulation properties
 	this->people = people;
 	this->four_threads_cond = four_threads_cond;
 	this->bench_time_cond = bench_time_cond;
-	// Update simulation properties
 
 	// Initialize obstacles
 	// max{x=459, y=114}
@@ -88,4 +88,33 @@ std::vector<Entity*> Simulation::get_vPersonnes() {
 
 bool Simulation::isRunning() {
 	return (this->get_vPersonnes().size() > 0) ? true : false;
+}
+
+// Compute the next frame
+void Simulation::tick() {
+
+	if (this->get_vPersonnes().size() == 0) {
+		return;
+	}
+
+	std::vector<Entity*> personnes = this->get_vPersonnes();
+
+	// Move each personne to the escape zone
+	for (int i = 0; i < personnes.size(); i++) {
+		Personne* p = dynamic_cast<Personne*>(personnes[i]);
+		p->move();
+	}
+
+	// If someone has reached the escape zone, remove it from the list and from the dataModel
+	for (int i = 0; i < personnes.size(); i++) {
+		Personne* p = dynamic_cast<Personne*>(personnes[i]);
+		if (p->has_escaped()) {
+			// rm from dataModel
+			this->dataGrid[p->get_x][p->get_size_y] = nullptr;
+			// rm from list
+			this->personnes.erase(this->personnes.begin()+i);
+			// delete personne
+			delete p;
+		}
+	}
 }
