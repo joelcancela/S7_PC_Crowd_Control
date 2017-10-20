@@ -93,11 +93,7 @@ void *tick(void *arguments) {
     }
     Personne* p = dynamic_cast<Personne*>(instance->get_vPersonnes()[nb]);
 
-    // If someone has reached the escape zone, remove it from the list
     if (p->has_escaped()) {
-
-        // rm from list
-        // Fetch next valid iterator
         instance->get_vPersonnes().erase(instance->get_vPersonnes().begin() + nb);
         delete p;
     }
@@ -116,10 +112,9 @@ void Simulation::start(){
     }else {
         struct arg_struct args{};
         args.instance = this;
-        std::cout << people << "threads" << std::endl;
         pthread_t thread_persons[(int) people];
         int error;
-        for (int i = 0; i < people - 1; i++) {
+        for (int i = 0; i < people; i++) {
             args.thread_number = i;
             error = pthread_create(&thread_persons[i], NULL, &tick, (void *) &args);
 
@@ -127,7 +122,7 @@ void Simulation::start(){
                 fprintf(stderr, "%s", strerror(error));
             }
         }
-        for (int i = 0; i < people - 1; i++)
+        for (int i = 0; i < people; i++)
         {
             pthread_join (thread_persons[i], NULL);
         }
