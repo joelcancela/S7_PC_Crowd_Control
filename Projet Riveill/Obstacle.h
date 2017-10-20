@@ -2,7 +2,6 @@
 
 #include "shared_header.h"
 #include "Entity.h"
-#include "Simulation.h"
 
 #define OBSTACLE_SIZE_REDUCTION_FACTOR 10
 

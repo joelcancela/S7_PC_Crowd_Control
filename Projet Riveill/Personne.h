@@ -2,7 +2,6 @@
 
 #include "shared_header.h"
 #include "Command.h"
-#include "Entity.h"
 
 #define PERSONNE_SIZE_X 1
 #define PERSONNE_SIZE_Y 1
@@ -20,4 +19,3 @@ public:
 	void move();
 	std::string to_string();
 };
-

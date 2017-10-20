@@ -1,5 +1,3 @@
-#pragma once
-
 #include "CommandMove.h"
 
 // North-West
