@@ -195,6 +195,8 @@ int main(int argc, char *argv[]) {
 
 	int tick_count = 0;
     simu->start();
+
+    //Unreachable for now
     while (!end_of_simulation) {
 
 		#ifdef W_UI
@@ -238,12 +240,8 @@ int main(int argc, char *argv[]) {
 		/* END: OF UI SPECIFIC */
 
 		#endif
-
 		// Check simulation state
 		end_of_simulation = !simu->isRunning();
-		if (end_of_simulation) {
-			continue;
-		}
     }
 
 	// DBG
