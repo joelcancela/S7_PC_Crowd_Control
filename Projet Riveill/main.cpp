@@ -194,6 +194,7 @@ int main(int argc, char *argv[]) {
 	#endif
 
 	int tick_count = 0;
+    simu->start();
     while (!end_of_simulation) {
 
 		#ifdef W_UI
@@ -243,9 +244,6 @@ int main(int argc, char *argv[]) {
 		if (end_of_simulation) {
 			continue;
 		}
-
-		// Compute next frame
-		simu->start();
     }
 
 	// DBG
