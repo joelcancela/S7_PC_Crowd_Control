@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandMove.h" />
+    <ClInclude Include="Datagrid.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Obstacle.h" />

@@ -14,3 +14,6 @@
 #ifdef linux
 
 #endif
+
+#define GRID_SIZE_X 512
+#define GRID_SIZE_Y 128

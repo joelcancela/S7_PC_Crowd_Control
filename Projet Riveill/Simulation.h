@@ -2,11 +2,9 @@
 
 #include "shared_header.h"
 #include "Entity.h"
-#include "Obstacle.h"
+#include "Datagrid.h"
 #include "Personne.h"
-
-#define GRID_SIZE_X 512
-#define GRID_SIZE_Y 128
+#include "Obstacle.h"
 
 class Simulation
 {
@@ -14,7 +12,7 @@ class Simulation
 	int four_threads_cond;
 	int bench_time_cond;
 
-	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr }; // Model
+	Datagrid* dataGrid;
 
 	std::vector<Entity*> obstacles;
 	std::vector<Entity*> personnes;

@@ -4,7 +4,7 @@
 #include "shared_header.h"
 #include "Simulation.h"
 
-#define ZOOM_FACTOR 2
+#define ZOOM_FACTOR 1
 
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
