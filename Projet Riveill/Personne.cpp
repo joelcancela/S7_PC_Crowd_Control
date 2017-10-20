@@ -8,33 +8,69 @@ Personne::Personne(int position_x = 0, int position_y = 0)
 	this->size_x = PERSONNE_SIZE_X;
 	this->size_y = PERSONNE_SIZE_Y;
 
-	/**
-	 * Compute shortest escape path
-	 * This is our command factory
-	 */
-
-	// Compute shortest distance to the 4 exit points
-	std::vector<int> exitA(2); // {0, -1}
-	exitA[0] = (0) - this->pos_x;
-	exitA[1] = (-1) - this->pos_y;
-	float sizeA = sqrt(exitA[0] * exitA[0] + exitA[1] * exitA[1]);
-	std::vector<int> exitB(2); // {1, -1}
-	exitB[0] = (1) - this->pos_x;
-	exitB[1] = (-1) - this->pos_y;
-	float sizeB = sqrt(exitB[0] * exitB[0] + exitB[1] * exitB[1]);
-	std::vector<int> exitC(2); // {-1, 0}
-	exitC[0] = (-1) - this->pos_x;
-	exitC[1] = (0) - this->pos_y;
-	float sizeC = sqrt(exitC[0] * exitC[0] + exitC[1] * exitC[1]);
-	std::vector<int> exitD(2); // {-1, 1}
-	exitC[0] = (-1) - this->pos_x;
-	exitC[1] = (1) - this->pos_y;
-	float sizeD = sqrt(exitD[0] * exitD[0] + exitD[1] * exitD[1]);
+	// Compute azimuth (exit point)
+	this->set_azimuth();
 	
 	std::stack<Command*> iCommands; // Commands are in reverse order
 }
 
 Personne::~Personne(){
+}
+
+/**
+* Compute shortest escape path
+*/
+void Personne::set_azimuth() {
+	
+	// Sorted list of azimuth
+	std::map<double, std::vector<int>> azimuthSort;
+
+	// List of escape points
+	std::stack<std::vector<int>> vEscapePoints;
+
+	std::vector<int> exitA(2); // {0, -1}
+	exitA[0] = 0;
+	exitA[1] = -1;
+	std::vector<int> exitB(2); // {1, -1}
+	exitB[0] = 1;
+	exitB[1] = -1;
+	std::vector<int> exitC(2); // {-1, 0}
+	exitC[0] = -1;
+	exitC[1] = 0;
+	std::vector<int> exitD(2); // {-1, 1}
+	exitD[0] = -1;
+	exitD[1] = 1;
+
+	vEscapePoints.push(exitA);
+	vEscapePoints.push(exitB);
+	vEscapePoints.push(exitC);
+	vEscapePoints.push(exitD);
+
+	while (!vEscapePoints.empty()) {
+		
+		std::vector<int> p(2); // Point
+		p = vEscapePoints.top();
+		vEscapePoints.pop();
+
+		std::vector<int> v(2); // Vector
+
+		// Compute vector
+		v[0] = p[0] - this->pos_x;
+		v[1] = p[1] - this->pos_y;
+
+		// Compute length
+		double size = sqrt(v[0] * v[0] + v[1] * v[1]);
+
+		// Add to sorted list
+		azimuthSort.insert(std::pair<double, std::vector<int>>(size, p));
+	}
+
+	// Set shortest point as azimuth
+	std::map<double, std::vector<int>>::iterator it = azimuthSort.begin();
+	for (it = azimuthSort.begin(); it != azimuthSort.end(); ++it) {
+		this->azimuth = it->second;
+		break;
+	}
 }
 
 bool Personne::has_escaped() {

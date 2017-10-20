@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <map>
 #include <cmath>
 
 #ifdef _WIN32
