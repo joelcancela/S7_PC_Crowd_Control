@@ -14,7 +14,7 @@ class Simulation
 	int bench_time_cond;
 
 	Datagrid* dataGrid;
-
+    std::vector<Entity*> personnes;
 	std::vector<Entity*> obstacles;
 
 public:
@@ -25,7 +25,5 @@ public:
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();
-
-    std::vector<Entity*> personnes;
 };
 
