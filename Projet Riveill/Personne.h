@@ -18,6 +18,6 @@ public:
 
 	std::string to_string();
 	bool has_escaped();
-	std::vector<int> move();
+	void move();
 };
 

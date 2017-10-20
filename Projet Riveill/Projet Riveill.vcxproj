@@ -75,6 +75,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>E:\Users\nikita\Documents\GitHub\CrowdControl\Projet Riveill\libs\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>W_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>E:\Users\nikita\Documents\GitHub\CrowdControl\Projet Riveill\redist\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

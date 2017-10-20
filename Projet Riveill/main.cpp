@@ -4,8 +4,9 @@
 #include "shared_header.h"
 #include "Simulation.h"
 
-#define ZOOM_FACTOR 1
+#ifdef W_UI
 
+#define ZOOM_FACTOR 1
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
 
@@ -110,6 +111,8 @@ void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation
 	SDL_RenderPresent(renderer);
 }
 
+#endif
+
 int main(int argc, char *argv[]) {
 
     int opt, bench_time = 0, four_threads = 0;
@@ -149,6 +152,8 @@ int main(int argc, char *argv[]) {
     bool end_of_simulation = false;											// Main loop
     Simulation* simu = new Simulation(people,four_threads,bench_time);		// Simulation handle
 
+	#ifdef W_UI
+
     /* SDL */
     SDL_Window *win = nullptr;					// Main SDL window
     SDL_Renderer *renderer = nullptr;
@@ -186,9 +191,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+	#endif
+
 	int tick_count = 0;
     while (!end_of_simulation) {
 
+		#ifdef W_UI
 		/* START: UI SPECIFIC */
 
 		// Quit by event
@@ -228,6 +236,8 @@ int main(int argc, char *argv[]) {
 
 		/* END: OF UI SPECIFIC */
 
+		#endif
+
 		// Check simulation state
 		end_of_simulation = !simu->isRunning();
 		if (end_of_simulation) {
@@ -249,8 +259,12 @@ int main(int argc, char *argv[]) {
 
     // End Of Simulation
     delete simu;
+
+	#ifdef W_UI
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
-    return EXIT_SUCCESS;
+	#endif
+    
+	return EXIT_SUCCESS;
 }

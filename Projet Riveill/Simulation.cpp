@@ -100,7 +100,6 @@ void Simulation::tick() {
 	for (it = this->personnes.begin(); it != this->personnes.end();) {
 
 		Personne* p = dynamic_cast<Personne*>(*it);
-		std::vector<int> old_pos;
 		
 		// Apply action
 		p->move();

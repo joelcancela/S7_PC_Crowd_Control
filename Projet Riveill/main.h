@@ -1,4 +1,7 @@
 #pragma once
 
-#include <SDL2\SDL.h>
+#ifdef W_UI
+	#include <SDL2\SDL.h>
+#endif
+
 #include <ctime>
