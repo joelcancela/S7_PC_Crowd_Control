@@ -37,15 +37,10 @@ Personne::Personne(int position_x = 0, int position_y = 0)
 Personne::~Personne(){
 }
 
-std::string Personne::to_string() {
-	return "*";
-}
-
 bool Personne::has_escaped() {
 	return escaped;
 }
 
-// Return old position when successful 
 void Personne::move() {
 
 	if (this->commands.empty()) {

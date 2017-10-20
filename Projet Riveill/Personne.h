@@ -16,7 +16,6 @@ public:
 	Personne(int position_x, int position_y);
 	~Personne();
 
-	std::string to_string();
 	bool has_escaped();
 	void move();
 	std::string to_string();
