@@ -17,17 +17,19 @@ Personne::Personne(int position_x = 0, int position_y = 0)
 	std::vector<int> exitA(2); // {0, -1}
 	exitA[0] = (0) - this->pos_x;
 	exitA[1] = (-1) - this->pos_y;
-	float sizeA = (int)sqrt(exitA[0] * exitA[0] + exitA[1] * exitA[1]);
+	float sizeA = sqrt(exitA[0] * exitA[0] + exitA[1] * exitA[1]);
 	std::vector<int> exitB(2); // {1, -1}
 	exitB[0] = (1) - this->pos_x;
 	exitB[1] = (-1) - this->pos_y;
-	float sizeB = (int)sqrt(exitB[0] * exitB[0] + exitB[1] * exitB[1]);
+	float sizeB = sqrt(exitB[0] * exitB[0] + exitB[1] * exitB[1]);
 	std::vector<int> exitC(2); // {-1, 0}
 	exitC[0] = (-1) - this->pos_x;
 	exitC[1] = (0) - this->pos_y;
+	float sizeC = sqrt(exitC[0] * exitC[0] + exitC[1] * exitC[1]);
 	std::vector<int> exitD(2); // {-1, 1}
 	exitC[0] = (-1) - this->pos_x;
 	exitC[1] = (1) - this->pos_y;
+	float sizeD = sqrt(exitD[0] * exitD[0] + exitD[1] * exitD[1]);
 	
 	std::stack<Command*> iCommands; // Commands are in reverse order
 }
@@ -56,4 +58,13 @@ void Personne::move() {
 		this->commands.pop();
 		c->exec();
 	}
+}
+
+std::string Personne::to_string() {
+	std::string s = "Personne {";
+	s += std::to_string(this->get_x());
+	s += ", ";
+	s += std::to_string(this->get_y());
+	s += "}";
+	return s;
 }
