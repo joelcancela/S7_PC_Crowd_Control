@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Datagrid.h"
+#include "Personne.h"
 
 /*
 * The Command interface.
@@ -11,5 +12,6 @@ public:
 	virtual void exec() = 0;
 protected:
 	Datagrid* modelHandle;
-	Command(Datagrid*);
+	Personne* personneHandle;
+	Command(Datagrid*, Personne*);
 };

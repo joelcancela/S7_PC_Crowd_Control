@@ -21,10 +21,6 @@ void CommandW::exec() {
 // rm from dataModel
 this->dataGrid->setEntityAt(old_pos[0], old_pos[1], nullptr);
 
-// Top-Left
-if (this->pos_x == -1 && this->pos_y == -1) {
-	return true;
-}
 // Top
 if (this->pos_x == 0 && this->pos_y == -1) {
 	return true;
