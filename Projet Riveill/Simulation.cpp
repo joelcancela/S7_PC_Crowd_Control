@@ -103,13 +103,10 @@ void Simulation::tick() {
 		std::vector<int> old_pos;
 		
 		// Apply action
-		old_pos = p->move();
+		p->move();
 
-		// If someone has reached the escape zone, remove it from the list and from the dataModel
+		// If someone has reached the escape zone, remove it from the list
 		if (p->has_escaped()) {
-
-			// rm from dataModel
-			this->dataGrid->setEntityAt(old_pos[0], old_pos[1], nullptr);
 			
 			// rm from list
 			// Fetch next valid iterator

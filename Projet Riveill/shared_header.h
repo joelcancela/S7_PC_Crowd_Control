@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stack>
 #include <cmath>
 
 #ifdef _WIN32

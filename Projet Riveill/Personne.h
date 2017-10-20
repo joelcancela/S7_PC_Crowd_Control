@@ -1,6 +1,7 @@
 #pragma once
 
 #include "shared_header.h"
+#include "Command.h"
 #include "Entity.h"
 
 #define PERSONNE_SIZE_X 1
@@ -8,7 +9,9 @@
 
 class Personne : public Entity
 {
-
+private:
+	std::stack<Command*> commands;
+	bool escaped = false;
 public:
 	Personne(int position_x, int position_y);
 	~Personne();

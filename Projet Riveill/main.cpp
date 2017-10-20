@@ -186,6 +186,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+	int tick_count = 0;
     while (!end_of_simulation) {
 
 		/* START: UI SPECIFIC */
@@ -235,9 +236,10 @@ int main(int argc, char *argv[]) {
 
 		// Compute next frame
 		simu->tick();
+		tick_count++;
 
 		// DBG
-		std::cout << "[Info] Tick";
+		std::cout << "[Info] Tick(" << std::to_string(tick_count) << ")";
 		getchar();
     }
 

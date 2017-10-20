@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Datagrid.h"
+
 /*
 * The Command interface.
 */
@@ -8,5 +10,6 @@ public:
 	virtual ~Command();
 	virtual void exec() = 0;
 protected:
-	Command();
+	Datagrid* modelHandle;
+	Command(Datagrid*);
 };
