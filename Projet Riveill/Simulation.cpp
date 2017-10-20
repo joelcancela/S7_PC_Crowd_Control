@@ -1,7 +1,14 @@
 #include <pthread.h>
 #include <cstring>
+#include <chrono>
+#include <thread>
 #include "Simulation.h"
 static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+struct arg_struct {
+    Simulation* instance;
+    int thread_number;
+};
 
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
 {
@@ -73,14 +80,61 @@ void Simulation::fill_grid(Entity* e) {
 	}
 }
 
+// Compute the next frame
+void *tick(void *arguments) {
+    pthread_mutex_lock (&simulation_mutex);
+    struct arg_struct *args = (struct arg_struct *)arguments;
+    int nb = args->thread_number;
+    Simulation* instance = args->instance;
+    Personne* p = dynamic_cast<Personne*>(instance->personnes[nb]);
+    std::cout << "Thread #"<< nb << " va deplacer"<<  p->to_string() << std::endl;
+    p->move();
+    std::cout << "Thread #"<< nb << " a déplacé" <<  p->to_string()<< std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    pthread_mutex_unlock (&simulation_mutex);
+    return NULL;
+
+    /*if (this->get_vPersonnes().size() == 0) {
+        return;
+    }
+
+    // Move each personne to the escape zone
+    std::vector<Entity*>::iterator it;
+    for (it = this->personnes.begin(); it != this->personnes.end();) {
+
+        Personne* p = dynamic_cast<Personne*>(*it);
+
+        // Apply action
+        p->move();
+
+        // If someone has reached the escape zone, remove it from the list
+        if (p->has_escaped()) {
+
+            // rm from list
+            // Fetch next valid iterator
+            it = this->personnes.erase(it);
+
+            // delete personne
+            delete p;
+        }
+        else {
+            it++; // Fetch next element in the list
+        }
+    }*/
+}
+
 void Simulation::start(){
     if(four_threads_cond){
         //TODO split
     }else {
+        struct arg_struct args{};
+        args.instance = this;
+        std::cout << people << "threads" << std::endl;
         pthread_t thread_persons[(int) people];
         int error;
         for (int i = 0; i < people - 1; i++) {
-            error = pthread_create(&thread_persons[i], NULL, reinterpret_cast<void *(*)(void *)>(&Simulation::tick), (void *) i);
+            args.thread_number = i;
+            error = pthread_create(&thread_persons[i], NULL, &tick, (void *) &args);
 
             if (error) {
                 fprintf(stderr, "%s", strerror(error));
@@ -115,46 +169,3 @@ bool Simulation::isRunning() {
 	return (this->get_vPersonnes().size() > 0) ? true : false;
 }
 
-// Compute the next frame
-void *Simulation::tick(void * p_data) {
-    intptr_t nb = reinterpret_cast<intptr_t>(p_data);
-    pthread_mutex_lock (&simulation_mutex);
-    /*std::cout << nb;
-    Personne* p = dynamic_cast<Personne*>(personnes[(int)nb]);
-    std::cout << "Thread #"<< nb << "va deplacer"<<  p->to_string();
-    p->move();
-    std::cout << "Thread #"<< nb << "a déplacé" <<  p->to_string();
-    */
-
-    std::cout << personnes.at(0)->get_x();
-     pthread_mutex_unlock (&simulation_mutex);
-    return NULL;
-
-	/*if (this->get_vPersonnes().size() == 0) {
-		return;
-	}
-
-	// Move each personne to the escape zone
-	std::vector<Entity*>::iterator it;
-	for (it = this->personnes.begin(); it != this->personnes.end();) {
-
-		Personne* p = dynamic_cast<Personne*>(*it);
-		
-		// Apply action
-		p->move();
-
-		// If someone has reached the escape zone, remove it from the list
-		if (p->has_escaped()) {
-			
-			// rm from list
-			// Fetch next valid iterator
-			it = this->personnes.erase(it);
-			
-			// delete personne
-			delete p;
-		}
-		else {
-			it++; // Fetch next element in the list
-		}
-	}*/
-}

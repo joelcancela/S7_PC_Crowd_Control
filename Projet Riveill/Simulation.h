@@ -1,5 +1,6 @@
 
 
+#include <mutex>
 #include "shared_header.h"
 #include "Entity.h"
 #include "Datagrid.h"
@@ -15,8 +16,7 @@ class Simulation
 	Datagrid* dataGrid;
 
 	std::vector<Entity*> obstacles;
-	std::vector<Entity*> personnes;
-	
+
 public:
 	Simulation(double people, int four_threads_cond, int bench_time_cond);
 	~Simulation();
@@ -25,6 +25,7 @@ public:
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();
-	void* tick(void * p_data);
+
+    std::vector<Entity*> personnes;
 };
 
