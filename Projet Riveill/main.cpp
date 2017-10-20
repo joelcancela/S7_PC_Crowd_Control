@@ -245,12 +245,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		// Compute next frame
-		simu->tick();
-		tick_count++;
-
-		// DBG
-		std::cout << "[Info] Tick(" << std::to_string(tick_count) << ")";
-		getchar();
+		simu->start();
     }
 
 	// DBG

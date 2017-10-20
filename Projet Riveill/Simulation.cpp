@@ -1,4 +1,7 @@
+#include <pthread.h>
+#include <cstring>
 #include "Simulation.h"
+static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
 {
@@ -49,6 +52,9 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 			}
 		}
 	}
+
+
+
 }
 
 void Simulation::fill_grid(Entity* e) {
@@ -65,6 +71,27 @@ void Simulation::fill_grid(Entity* e) {
 			this->dataGrid->setEntityAt(pos[0] + x, pos[1] + y, e);
 		}
 	}
+}
+
+void Simulation::start(){
+    if(four_threads_cond){
+        //TODO split
+    }else {
+        pthread_t thread_persons[(int) people];
+        int error;
+        for (int i = 0; i < people - 1; i++) {
+            error = pthread_create(&thread_persons[i], NULL, reinterpret_cast<void *(*)(void *)>(&Simulation::tick), (void *) i);
+
+            if (error) {
+                fprintf(stderr, "%s", strerror(error));
+            }
+        }
+        for (int i = 0; i < people - 1; i++)
+        {
+            pthread_join (thread_persons[i], NULL);
+        }
+
+    }
 }
 
 Simulation::~Simulation()
@@ -89,9 +116,21 @@ bool Simulation::isRunning() {
 }
 
 // Compute the next frame
-void Simulation::tick() {
+void *Simulation::tick(void * p_data) {
+    intptr_t nb = reinterpret_cast<intptr_t>(p_data);
+    pthread_mutex_lock (&simulation_mutex);
+    /*std::cout << nb;
+    Personne* p = dynamic_cast<Personne*>(personnes[(int)nb]);
+    std::cout << "Thread #"<< nb << "va deplacer"<<  p->to_string();
+    p->move();
+    std::cout << "Thread #"<< nb << "a déplacé" <<  p->to_string();
+    */
 
-	if (this->get_vPersonnes().size() == 0) {
+    std::cout << personnes.at(0)->get_x();
+     pthread_mutex_unlock (&simulation_mutex);
+    return NULL;
+
+	/*if (this->get_vPersonnes().size() == 0) {
 		return;
 	}
 
@@ -117,5 +156,5 @@ void Simulation::tick() {
 		else {
 			it++; // Fetch next element in the list
 		}
-	}
+	}*/
 }

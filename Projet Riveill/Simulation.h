@@ -1,4 +1,4 @@
-#pragma once
+
 
 #include "shared_header.h"
 #include "Entity.h"
@@ -23,7 +23,8 @@ public:
 	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
+	void start();
 	bool isRunning();
-	void tick();
+	void* tick(void * p_data);
 };
 
