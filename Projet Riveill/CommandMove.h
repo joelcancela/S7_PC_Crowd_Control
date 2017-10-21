@@ -7,17 +7,17 @@
 // North-West
 class CommandNW : public Command {
 public:
-	void exec(int, int);
+	bool exec(int, int);
 };
 
 // North
 class CommandN : public Command {
 public:
-	void exec(int, int);
+	bool exec(int, int);
 };
 
 // West
 class CommandW : public Command {
 public:
-	void exec(int, int);
+	bool exec(int, int);
 };

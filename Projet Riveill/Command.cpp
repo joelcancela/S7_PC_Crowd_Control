@@ -6,12 +6,12 @@ Command::Command(Datagrid* g) {
 
 Command::~Command() {}
 
-void Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
+bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 
 	// test if the shifted point is available
 	// do nothing otherwise
 	if (this->modelHandle->getEntityAt(shifted_x, shifted_y) != nullptr) {
-		return;
+		return false;
 	}
 
 	// fetch entity pointer
@@ -26,12 +26,13 @@ void Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 		// person has escaped
 		// remove from the dataModel
 		this->modelHandle->setEntityAt(x, y, nullptr);
-		return;
+		return true;
 	}
 
 	// move entity to the new position
 	this->modelHandle->setEntityAt(x, y, nullptr);
 	this->modelHandle->setEntityAt(shifted_x, shifted_y, e);
+	return true;
 }
 
 bool Command::isOOB(int x, int y) {

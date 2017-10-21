@@ -11,6 +11,7 @@ Personne::Personne(int position_x = 0, int position_y = 0)
 	// Compute azimuth (exit point)
 	this->set_azimuth();
 	
+	// Compute path to escape point
 	std::stack<Command*> iCommands; // Commands are in reverse order
 }
 
@@ -84,23 +85,27 @@ void Personne::move() {
 	}
 
 	Command* c = this->commands.top();
-	this->commands.pop();
 
 	if (c != nullptr) {
-		c->exec(this->get_x(), this->get_size_y());
+		if (c->exec(this->get_x(), this->get_size_y())) {
+			this->commands.pop();
 
-		// Test if we have escaped
-		if (Command::isOOB(this->get_x(), this->get_y())) {
-			this->escaped = true;
+			// Test if we have escaped
+			if (Command::isOOB(this->get_x(), this->get_y())) {
+				this->escaped = true;
+			}
 		}
 	}
 }
 
 std::string Personne::to_string() {
+
 	std::string s = "Personne {";
+	
 	s += std::to_string(this->get_x());
 	s += ", ";
 	s += std::to_string(this->get_y());
 	s += "}";
+	
 	return s;
 }
