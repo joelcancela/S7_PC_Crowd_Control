@@ -5,6 +5,7 @@
 #include "Datagrid.h"
 #include "Personne.h"
 #include "Obstacle.h"
+#include "Command.h"
 
 class Simulation
 {
@@ -25,5 +26,8 @@ public:
 	std::vector<Entity*> get_vPersonnes();
 	bool isRunning();
 	void tick();
-};
 
+private:
+	static std::vector<int> azimuth(int, int);				// Helper for creating a path
+	std::stack<Command*> path(int, int, std::vector<int>);	// Compute path to the azimuth
+};

@@ -9,16 +9,13 @@
 class Personne : public Entity
 {
 private:
-	std::stack<Command*> commands;
+	std::stack<Command*> pathCommands;
 	bool escaped = false;
-	std::vector<int> azimuth;
-public:
-	Personne(int position_x, int position_y);
-	~Personne();
 
+public:
+	Personne(int, int, std::stack<Command*>);
+	~Personne();
+	std::string to_string();
 	bool has_escaped();
 	void move();
-	std::string to_string();
-private:
-	void set_azimuth();
 };

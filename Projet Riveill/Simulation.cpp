@@ -36,15 +36,25 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	int x, y;
 	for (int i = 0; i < people; i++) {
 		Personne* p;
-		// while we have not found a proper cell for our personne
+		// while we have not found a proper cell for this personne
 		while (1) {
 			x = rand() % GRID_SIZE_X;
 			y = rand() % GRID_SIZE_Y;
 
 			if (this->dataGrid->getEntityAt(x,y) == nullptr) {
-				p = new Personne(x, y);
+
+				// Compute Azimuth
+				std::vector<int> az = azimuth(x, y);
+
+				// Compute Path
+				std::stack<Command*> pa = path(x, y, az);
+
+				// Create new Personne
+				p = new Personne(x, y, pa);
+
 				this->personnes.push_back(p);
 				this->fill_grid(p);
+				
 				break;
 			}
 		}
@@ -118,4 +128,67 @@ void Simulation::tick() {
 			it++; // Fetch next element in the list
 		}
 	}
+}
+
+
+/**
+ * Compute shortest escape point from the given position
+ */
+std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
+
+	// Sorted list of azimuth
+	std::map<double, std::vector<int>> azimuthSort;
+
+	// List of escape points
+	std::stack<std::vector<int>> vEscapePoints;
+
+	std::vector<int> exitA(2); // {0, -1}
+	exitA[0] = 0;
+	exitA[1] = -1;
+	std::vector<int> exitB(2); // {1, -1}
+	exitB[0] = 1;
+	exitB[1] = -1;
+	std::vector<int> exitC(2); // {-1, 0}
+	exitC[0] = -1;
+	exitC[1] = 0;
+	std::vector<int> exitD(2); // {-1, 1}
+	exitD[0] = -1;
+	exitD[1] = 1;
+
+	vEscapePoints.push(exitA);
+	vEscapePoints.push(exitB);
+	vEscapePoints.push(exitC);
+	vEscapePoints.push(exitD);
+
+	while (!vEscapePoints.empty()) {
+
+		// Point
+		std::vector<int> p(2);
+		p = vEscapePoints.top();
+		vEscapePoints.pop();
+
+		// Vector
+		std::vector<int> v(2);
+
+		// Compute vector
+		v[0] = p[0] - pos_x;
+		v[1] = p[1] - pos_y;
+
+		// Compute length
+		double size = sqrt(v[0] * v[0] + v[1] * v[1]);
+
+		// Add to sorted list
+		azimuthSort.insert(std::pair<double, std::vector<int>>(size, p));
+	}
+
+	// Set shortest point as azimuth
+	std::map<double, std::vector<int>>::iterator it = azimuthSort.begin();
+	for (it = azimuthSort.begin(); it != azimuthSort.end(); ++it) {
+		return it->second;
+	}
+}
+
+std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth)
+{
+	return std::stack<Command*>();
 }
