@@ -23,6 +23,10 @@ public:
 	unsigned int get_size_x();
 	unsigned int get_size_y();
 
+	// Setters
+	void set_x(unsigned int);
+	void set_y(unsigned int);
+
 protected:
 	Entity();
 };

@@ -84,10 +84,15 @@ void Personne::move() {
 	}
 
 	Command* c = this->commands.top();
-	
+	this->commands.pop();
+
 	if (c != nullptr) {
-		this->commands.pop();
-		c->exec();
+		c->exec(this->get_x(), this->get_size_y());
+
+		// Test if we have escaped
+		if (Command::isOOB(this->get_x(), this->get_y())) {
+			this->escaped = true;
+		}
 	}
 }
 

@@ -1,38 +1,28 @@
 #include "CommandMove.h"
 
 // North-West
-void CommandNW::exec() {
+void CommandNW::exec(int x, int y) {
 
+	int shifted_x = x - 1;
+	int shifted_y = y - 1;
+
+	this->shared_exec(x, y, shifted_x, shifted_y);
 }
 
 // North
-void CommandN::exec() {
+void CommandN::exec(int x, int y) {
 
+	int shifted_x = x;
+	int shifted_y = y - 1;
+
+	this->shared_exec(x, y, shifted_x, shifted_y);
 }
 
 // West
-void CommandW::exec() {
+void CommandW::exec(int x, int y) {
 
-}
+	int shifted_x = x - 1;
+	int shifted_y = y;
 
-/*
-// rm from dataModel
-this->dataGrid->setEntityAt(old_pos[0], old_pos[1], nullptr);
-
-// Top
-if (this->pos_x == 0 && this->pos_y == -1) {
-	return true;
+	this->shared_exec(x, y, shifted_x, shifted_y);
 }
-// Top-Right
-if (this->pos_x == 1 && this->pos_y == -1) {
-	return true;
-}
-// Left
-if (this->pos_x == -1 && this->pos_y == 0) {
-	return true;
-}
-// Bottom-Left
-if (this->pos_x == -1 && this->pos_y == 1) {
-	return true;
-}
-*/

@@ -22,3 +22,11 @@ unsigned int Entity::get_size_x() {
 unsigned int Entity::get_size_y() {
 	return this->size_y;
 }
+
+// Setters
+void Entity::set_x(unsigned int x) {
+	this->pos_x = x;
+}
+void Entity::set_y(unsigned int y) {
+	this->pos_y = y;
+}
