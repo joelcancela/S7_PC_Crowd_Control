@@ -15,6 +15,7 @@ private:
 public:
 	Personne(int, int, std::queue<Command*>);
 	~Personne();
+	Entity* getNextDestination(Datagrid* grid);
 	std::string to_string();
 	bool has_escaped();
 	void move();

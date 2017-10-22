@@ -3,6 +3,7 @@
 void *tick(void *arguments);
 
 static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
 
 struct arg_struct {
     Simulation *instance;
@@ -95,16 +96,26 @@ void *tick(void *arguments) {
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
-    pthread_mutex_unlock(&simulation_mutex);
     while (!p->has_escaped()) {
-        pthread_mutex_lock(&simulation_mutex);
+        int old_x = p->get_x();
+        int old_y = p->get_y();
         p->move();
-        std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
-        pthread_mutex_unlock(&simulation_mutex);
-        //usleep(100000);
+        int new_x = p->get_x();
+        int new_y = p->get_y();
+        if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
+            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
+            while (p->getNextDestination(instance->dataGrid) != nullptr) {
+                pthread_cond_wait(&cond_var, &simulation_mutex);
+            }
+            std::cout << "Thread #" << nb << " id:" << pthread_self() << " se reveille" << std::endl;;
+        } else {
+            std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
+        }
     }
     std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
-    return NULL;
+    pthread_cond_broadcast(&cond_var);
+    pthread_mutex_unlock(&simulation_mutex);
+    return nullptr;
 }
 
 void create_thread(pthread_t thread_persons[], int i, Simulation *pSimulation) {
@@ -128,7 +139,7 @@ void Simulation::start() {
         for (int j = 0; j < people; j++) {
             pthread_join(thread_persons[j], NULL);
         }
-        while(!get_vPersonnes().empty()){
+        while (!get_vPersonnes().empty()) {
             Personne *p = dynamic_cast<Personne *>(personnes[0]);
             personnes.erase(personnes.begin());
             delete p;

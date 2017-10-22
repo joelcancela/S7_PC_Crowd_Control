@@ -9,6 +9,8 @@ class Command {
 protected:
 	Datagrid* modelHandle;
 public:
+	int x_modifier;
+	int y_modifier;
 	Command(Datagrid*);
 	virtual ~Command();
 	virtual bool exec(int, int) = 0;					// Compute new position from current position : return true if success, false otherwise

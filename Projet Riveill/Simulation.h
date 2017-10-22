@@ -15,8 +15,7 @@ class Simulation
 	int four_threads_cond;
 	int bench_time_cond;
 
-	Datagrid* dataGrid;
-    std::vector<Entity*> personnes;
+	std::vector<Entity*> personnes;
 	std::vector<Entity*> obstacles;
 
 public:
@@ -28,6 +27,7 @@ public:
 	void start();
 	bool isRunning();
 
+	Datagrid* dataGrid;
 private:
 	static std::vector<int> azimuth(int, int);				// Helper for creating a path
 	std::queue<Command*> path(int, int, std::vector<int>);	// Compute path to the azimuth

@@ -194,7 +194,6 @@ int main(int argc, char *argv[]) {
 
 	int tick_count = 0;
     simu->start();
-
     //Unreachable for now
     while (!end_of_simulation) {
 
@@ -244,8 +243,7 @@ int main(int argc, char *argv[]) {
     }
 
 	// Print
-	std::cout << "[Info] End of simulation. Press a key to exit...";
-	getchar();
+	std::cout << "[Info] End of simulation";
 
     // End Of Simulation
     delete simu;

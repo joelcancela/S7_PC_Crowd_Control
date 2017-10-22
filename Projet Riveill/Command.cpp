@@ -7,12 +7,18 @@ Command::Command(Datagrid* g) {
 Command::~Command() {}
 
 CommandNW::CommandNW(Datagrid* g) : Command(g) {
+	x_modifier=-1;
+	y_modifier=-1;
 }
 
 CommandN::CommandN(Datagrid* g) : Command(g) {
+	x_modifier=0;
+	y_modifier=-1;
 }
 
 CommandW::CommandW(Datagrid* g) : Command(g) {
+	x_modifier=-1;
+	y_modifier=0;
 }
 
 CommandN::~CommandN() {}
