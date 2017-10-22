@@ -101,7 +101,7 @@ void *tick(void *arguments) {
         p->move();
         std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
         pthread_mutex_unlock(&simulation_mutex);
-        usleep(100000);
+        //usleep(100000);
     }
     std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
     return NULL;
