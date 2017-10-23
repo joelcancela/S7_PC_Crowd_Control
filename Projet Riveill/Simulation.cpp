@@ -203,9 +203,9 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 	std::map<double, Command*> pathSort;
 
 	// Commands
-	Command* mv_n = new CommandN(this->dataGrid);
-	Command* mv_nw = new CommandNW(this->dataGrid);
-	Command* mv_w = new CommandW(this->dataGrid);
+	CommandN* mv_n = new CommandN(this->dataGrid);
+	CommandNW* mv_nw = new CommandNW(this->dataGrid);
+	CommandW* mv_w = new CommandW(this->dataGrid);
 
 	while (1) {
 
@@ -221,9 +221,8 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 		// Compute the three posibilities
 		// Only if the next position is not blocked by an Obstacle
 
-		std::vector<int> n;
-		n[0] = pos_x;
-		n[1] = pos_y - 1;
+		// north
+		std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
 		if (this->dataGrid->getEntityAt(n[0], n[1]) == nullptr) {
 			double len_n = sqrt(
 				(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
@@ -232,9 +231,8 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 			pathSort.insert(std::pair<double, Command*>(len_n, mv_n));
 		}
 
-		std::vector<int> nw;
-		nw[0] = pos_x - 1;
-		nw[1] = pos_y - 1;
+		// north-west
+		std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
 		if (this->dataGrid->getEntityAt(nw[0], nw[1]) == nullptr) {
 			double len_nw = sqrt(
 				(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
@@ -243,9 +241,8 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 			pathSort.insert(std::pair<double, Command*>(len_nw, mv_nw));
 		}
 		
-		std::vector<int> w;
-		w[0] = pos_x - 1;
-		w[1] = pos_y;
+		// west
+		std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
 		if (this->dataGrid->getEntityAt(w[0], w[1]) == nullptr) {
 			double len_w = sqrt(
 				(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
@@ -257,12 +254,27 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 		// Pick the command that brings us closer to the azimuth
 		std::map<double, Command*>::iterator it = pathSort.begin();
 		for (it = pathSort.begin(); it != pathSort.end(); ++it) {
-			iPath.push(it->second);
+
+			Command* c = it->second;
+			iPath.push(c);
+
+			// Update {x, y} for the next iteration
+			std::vector<int> next_pos(2);
+			if (dynamic_cast<CommandN*>(c) != nullptr) {
+				next_pos = this->getNextPos(dynamic_cast<CommandN*>(iPath.top()), pos_x, pos_y);
+			}
+			else if (dynamic_cast<CommandNW*>(c) != nullptr) {
+				next_pos = this->getNextPos(dynamic_cast<CommandNW*>(iPath.top()), pos_x, pos_y);
+			}
+			else {
+				next_pos = this->getNextPos(dynamic_cast<CommandW*>(iPath.top()), pos_x, pos_y);
+			}
+
+			pos_x = next_pos[0];
+			pos_y = next_pos[1];
+
 			break;
 		}
-
-		// Update {x, y} for the next iteration
-
 	}
 
 	// Reverse stack
@@ -274,3 +286,22 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 	return path;
 }
 
+std::vector<int> Simulation::getNextPos(CommandN* n, int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x;
+	r[1] = y - 1;
+	return r;
+}
+
+std::vector<int> Simulation::getNextPos(CommandNW* nw, int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x - 1;
+	r[1] = y - 1;
+	return r;
+}
+std::vector<int> Simulation::getNextPos(CommandW* w, int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x - 1;
+	r[1] = y;
+	return r;
+}

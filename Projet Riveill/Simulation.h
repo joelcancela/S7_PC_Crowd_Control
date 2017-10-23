@@ -30,4 +30,9 @@ public:
 private:
 	static std::vector<int> azimuth(int, int);				// Helper for creating a path
 	std::stack<Command*> path(int, int, std::vector<int>);	// Compute path to the azimuth
+
+	// More helpers for path finding
+	std::vector<int> getNextPos(CommandN*, int, int);
+	std::vector<int> getNextPos(CommandNW*, int, int);
+	std::vector<int> getNextPos(CommandW*, int, int);
 };
