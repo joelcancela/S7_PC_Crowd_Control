@@ -27,9 +27,23 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 		return false; // This should never happen
 	}
 
+	// test if the new point is an escape zone
+	if (is_an_escape_zone(shifted_x, shifted_y)) {
+
+		// set person properties (out of the zone)
+		e->set_x(shifted_x);
+		e->set_y(shifted_y);
+		
+		// remove from the dataModel
+		this->modelHandle->setEntityAt(x, y, nullptr);
+		return true;
+	}
+
 	// test if the shifted point is available
-	// do nothing otherwise
 	if (this->modelHandle->getEntityAt(shifted_x, shifted_y) != nullptr) {
+		return false;
+	}
+	if (is_oob(shifted_x, shifted_y)) {
 		return false;
 	}
 
@@ -37,21 +51,13 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 	e->set_x(shifted_x);
 	e->set_y(shifted_y);
 
-	// test if the new point is out of bound
-	if (isOOB(shifted_x, shifted_y)) {
-		// person has escaped
-		// remove from the dataModel
-		this->modelHandle->setEntityAt(x, y, nullptr);
-		return true;
-	}
-
 	// move entity to the new position
 	this->modelHandle->setEntityAt(x, y, nullptr);
 	this->modelHandle->setEntityAt(shifted_x, shifted_y, e);
 	return true;
 }
 
-bool Command::isOOB(int x, int y) {
+bool Command::is_an_escape_zone(int x, int y) {
 
 	// Top-Left
 	if (x == -1 && y == -1) {
@@ -74,7 +80,15 @@ bool Command::isOOB(int x, int y) {
 		return true;
 	}
 
-	// Position is not out of bound
+	return false;
+}
+
+bool Command::is_oob(int x, int y) {
+
+	if (x < 0 || y < 0) {
+		return true;
+	}
+
 	return false;
 }
 

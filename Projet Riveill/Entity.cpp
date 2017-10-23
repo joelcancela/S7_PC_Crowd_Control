@@ -9,10 +9,10 @@ Entity::~Entity()
 }
 
 // Getters
-unsigned int Entity::get_x() {
+int Entity::get_x() {
 	return this->pos_x;
 }
-unsigned int Entity::get_y() {
+int Entity::get_y() {
 	return this->pos_y;
 }
 
@@ -24,9 +24,9 @@ unsigned int Entity::get_size_y() {
 }
 
 // Setters
-void Entity::set_x(unsigned int x) {
+void Entity::set_x(int x) {
 	this->pos_x = x;
 }
-void Entity::set_y(unsigned int y) {
+void Entity::set_y(int y) {
 	this->pos_y = y;
 }

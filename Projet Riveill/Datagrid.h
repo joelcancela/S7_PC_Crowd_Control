@@ -16,13 +16,13 @@ public:
 	}
 
 	void setEntityAt(int x, int y, Entity* e) {
-		if (x > 0 && y > 0) {
+		if (x >= 0 && y >= 0) {
 			dataGrid[x][y] = e;
 		}
 	}
 
 	Entity* getEntityAt(int x, int y) {
-		if (x > 0 && y > 0) {
+		if (x >= 0 && y >= 0) {
 			return dataGrid[x][y];
 		}
 		return nullptr;

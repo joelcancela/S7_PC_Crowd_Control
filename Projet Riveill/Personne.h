@@ -9,11 +9,11 @@
 class Personne : public Entity
 {
 private:
-	std::stack<Command*> pathCommands;
+	std::queue<Command*> pathCommands;
 	bool escaped = false;
 
 public:
-	Personne(int, int, std::stack<Command*>);
+	Personne(int, int, std::queue<Command*>);
 	~Personne();
 	std::string to_string();
 	bool has_escaped();

@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
 		SDL_RenderPresent(renderer);
 
 		// Give us time to see the window changes.
-		SDL_Delay(100);
+		SDL_Delay(10);
 
 		/* END: OF UI SPECIFIC */
 

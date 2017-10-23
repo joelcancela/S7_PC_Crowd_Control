@@ -1,6 +1,6 @@
 #include "Personne.h"
 
-Personne::Personne(int position_x, int position_y, std::stack<Command*> path)
+Personne::Personne(int position_x, int position_y, std::queue<Command*> path)
 {
 	this->pos_x = position_x;
 	this->pos_y = position_y;
@@ -24,14 +24,14 @@ void Personne::move() {
 		return;
 	}
 
-	Command* c = this->pathCommands.top();
+	Command* c = this->pathCommands.front();
 
 	if (c != nullptr) {
 		if (c->exec(this->get_x(), this->get_y())) {
 			this->pathCommands.pop();
 
 			// Test if we have escaped
-			if (Command::isOOB(this->get_x(), this->get_y())) {
+			if (Command::is_an_escape_zone(this->get_x(), this->get_y())) {
 				this->escaped = true;
 			}
 		}

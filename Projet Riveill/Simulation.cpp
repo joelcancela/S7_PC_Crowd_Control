@@ -49,14 +49,12 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 				std::vector<int> az = azimuth(x, y);
 
 				// Compute Path
-				std::stack<Command*> pa = path(x, y, az);
+				std::queue<Command*> pa = path(x, y, az);
 
 				// Create new Personne
 				p = new Personne(x, y, pa);
-
 				this->personnes.push_back(p);
 				this->fill_grid(p);
-				
 				break;
 			}
 		}
@@ -64,7 +62,7 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 }
 
 void Simulation::fill_grid(Entity* e) {
-	std::vector<unsigned int> pos(2);
+	std::vector<int> pos(2);
 	pos[0] = e->get_x();
 	pos[1] = e->get_y();
 
@@ -142,7 +140,7 @@ std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
 	std::map<double, std::vector<int>> azimuthSort;
 
 	// List of escape points
-	std::stack<std::vector<int>> vEscapePoints;
+	std::queue<std::vector<int>> vEscapePoints;
 
 	std::vector<int> exitA(2); // {0, -1}
 	exitA[0] = 0;
@@ -166,7 +164,7 @@ std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
 
 		// Point
 		std::vector<int> p(2);
-		p = vEscapePoints.top();
+		p = vEscapePoints.front();
 		vEscapePoints.pop();
 
 		// Vector
@@ -188,16 +186,17 @@ std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
 	for (it = azimuthSort.begin(); it != azimuthSort.end(); ++it) {
 		return it->second;
 	}
+
+	return std::vector<int>(2, 0);
 }
 
 /**
  * Compute shortest escape path
  */
-std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth)
+std::queue<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth)
 {
 	// Commands stack
-	std::stack<Command*> path;
-	std::stack<Command*> iPath;
+	std::queue<Command*> path;
 
 	// Sorted list of distances
 	std::map<double, Command*> pathSort;
@@ -220,35 +219,42 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 
 		// Compute the three posibilities
 		// Only if the next position is not blocked by an Obstacle
+		// OK for an escape, KO for border traversal
 
 		// north
 		std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
 		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(n[0], n[1])) == nullptr) {
-			double len_n = sqrt(
-				(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
-				(azimuth[1] - n[1]) * (azimuth[1] - n[1])
-			);
-			pathSort.insert(std::pair<double, Command*>(len_n, mv_n));
+			if (Command::is_an_escape_zone(n[0], n[1]) || !Command::is_oob(n[0], n[1])) {
+				double len_n = sqrt(
+					(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
+					(azimuth[1] - n[1]) * (azimuth[1] - n[1])
+				);
+				pathSort.insert(std::pair<double, Command*>(len_n, mv_n));
+			}
 		}
 
 		// north-west
 		std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
 		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(nw[0], nw[1])) == nullptr) {
-			double len_nw = sqrt(
-				(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
-				(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
-			);
-			pathSort.insert(std::pair<double, Command*>(len_nw, mv_nw));
+			if (Command::is_an_escape_zone(nw[0], nw[1]) || !Command::is_oob(nw[0], nw[1])) {
+				double len_nw = sqrt(
+					(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
+					(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
+				);
+				pathSort.insert(std::pair<double, Command*>(len_nw, mv_nw));
+			}
 		}
 		
 		// west
 		std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
 		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(w[0], w[1])) == nullptr) {
-			double len_w = sqrt(
-				(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
-				(azimuth[1] - w[1]) * (azimuth[1] - w[1])
-			);
-			pathSort.insert(std::pair<double, Command*>(len_w, mv_w));
+			if (Command::is_an_escape_zone(w[0], w[1]) || !Command::is_oob(w[0], w[1])) {
+				double len_w = sqrt(
+					(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
+					(azimuth[1] - w[1]) * (azimuth[1] - w[1])
+				);
+				pathSort.insert(std::pair<double, Command*>(len_w, mv_w));
+			}
 		}
 
 		// Pick the command that brings us closer to the azimuth
@@ -256,17 +262,20 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 		for (it = pathSort.begin(); it != pathSort.end(); ++it) {
 
 			Command* c = it->second;
-			iPath.push(c);
+			path.push(c);
 
 			// Update {x, y} for the next iteration
 			std::vector<int> next_pos(2);
 
+			// N
 			if (dynamic_cast<CommandN*>(c) != nullptr) {
 				next_pos = this->getNextPos(dynamic_cast<CommandN*>(c), pos_x, pos_y);
 			}
+			// NW
 			else if (dynamic_cast<CommandNW*>(c) != nullptr) {
 				next_pos = this->getNextPos(dynamic_cast<CommandNW*>(c), pos_x, pos_y);
 			}
+			// W
 			else {
 				next_pos = this->getNextPos(dynamic_cast<CommandW*>(c), pos_x, pos_y);
 			}
@@ -276,12 +285,6 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 
 			break;
 		}
-	}
-
-	// Reverse stack
-	while (!iPath.empty()) {
-		path.push(iPath.top());
-		iPath.pop();
 	}
 
 	return path;
