@@ -21,14 +21,17 @@ CommandW::~CommandW() {}
 
 bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 
+	// fetch entity pointer
+	Entity* e = this->modelHandle->getEntityAt(x, y);
+	if (e == nullptr) {
+		return false; // This should never happen
+	}
+
 	// test if the shifted point is available
 	// do nothing otherwise
 	if (this->modelHandle->getEntityAt(shifted_x, shifted_y) != nullptr) {
 		return false;
 	}
-
-	// fetch entity pointer
-	Entity* e = this->modelHandle->getEntityAt(x, y);
 
 	// update entity properties
 	e->set_x(shifted_x);
@@ -77,27 +80,15 @@ bool Command::isOOB(int x, int y) {
 
 // North-West
 bool CommandNW::exec(int x, int y) {
-
-	int shifted_x = x - 1;
-	int shifted_y = y - 1;
-
-	return this->shared_exec(x, y, shifted_x, shifted_y);
+	return this->shared_exec(x, y, x - 1, y - 1);
 }
 
 // North
 bool CommandN::exec(int x, int y) {
-
-	int shifted_x = x;
-	int shifted_y = y - 1;
-
-	return this->shared_exec(x, y, shifted_x, shifted_y);
+	return this->shared_exec(x, y, x, y - 1);
 }
 
 // West
 bool CommandW::exec(int x, int y) {
-
-	int shifted_x = x - 1;
-	int shifted_y = y;
-
-	return this->shared_exec(x, y, shifted_x, shifted_y);
+	return this->shared_exec(x, y, x - 1, y);
 }

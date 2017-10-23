@@ -223,7 +223,7 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 
 		// north
 		std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
-		if (this->dataGrid->getEntityAt(n[0], n[1]) == nullptr) {
+		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(n[0], n[1])) == nullptr) {
 			double len_n = sqrt(
 				(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
 				(azimuth[1] - n[1]) * (azimuth[1] - n[1])
@@ -233,7 +233,7 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 
 		// north-west
 		std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
-		if (this->dataGrid->getEntityAt(nw[0], nw[1]) == nullptr) {
+		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(nw[0], nw[1])) == nullptr) {
 			double len_nw = sqrt(
 				(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
 				(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
@@ -243,7 +243,7 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 		
 		// west
 		std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
-		if (this->dataGrid->getEntityAt(w[0], w[1]) == nullptr) {
+		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(w[0], w[1])) == nullptr) {
 			double len_w = sqrt(
 				(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
 				(azimuth[1] - w[1]) * (azimuth[1] - w[1])
