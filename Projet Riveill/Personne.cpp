@@ -27,7 +27,7 @@ void Personne::move() {
 	Command* c = this->pathCommands.top();
 
 	if (c != nullptr) {
-		if (c->exec(this->get_x(), this->get_size_y())) {
+		if (c->exec(this->get_x(), this->get_y())) {
 			this->pathCommands.pop();
 
 			// Test if we have escaped

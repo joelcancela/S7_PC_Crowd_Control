@@ -260,14 +260,15 @@ std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azi
 
 			// Update {x, y} for the next iteration
 			std::vector<int> next_pos(2);
+
 			if (dynamic_cast<CommandN*>(c) != nullptr) {
-				next_pos = this->getNextPos(dynamic_cast<CommandN*>(iPath.top()), pos_x, pos_y);
+				next_pos = this->getNextPos(dynamic_cast<CommandN*>(c), pos_x, pos_y);
 			}
 			else if (dynamic_cast<CommandNW*>(c) != nullptr) {
-				next_pos = this->getNextPos(dynamic_cast<CommandNW*>(iPath.top()), pos_x, pos_y);
+				next_pos = this->getNextPos(dynamic_cast<CommandNW*>(c), pos_x, pos_y);
 			}
 			else {
-				next_pos = this->getNextPos(dynamic_cast<CommandW*>(iPath.top()), pos_x, pos_y);
+				next_pos = this->getNextPos(dynamic_cast<CommandW*>(c), pos_x, pos_y);
 			}
 
 			pos_x = next_pos[0];

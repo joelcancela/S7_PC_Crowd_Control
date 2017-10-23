@@ -6,6 +6,19 @@ Command::Command(Datagrid* g) {
 
 Command::~Command() {}
 
+CommandNW::CommandNW(Datagrid* g) : Command(g) {
+}
+
+CommandN::CommandN(Datagrid* g) : Command(g) {
+}
+
+CommandW::CommandW(Datagrid* g) : Command(g) {
+}
+
+CommandN::~CommandN() {}
+CommandNW::~CommandNW() {}
+CommandW::~CommandW() {}
+
 bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 
 	// test if the shifted point is available
