@@ -1,5 +1,13 @@
 #include "Simulation.h"
 
+void *tick(void *arguments);
+static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+struct arg_struct {
+    Simulation *instance;
+    int thread_number;
+};
+
 Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
 {
 	// Update simulation properties
@@ -7,6 +15,7 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	this->four_threads_cond = four_threads_cond;
 	this->bench_time_cond = bench_time_cond;
 
+	// Data model
 	this->dataGrid = new Datagrid();
 
 	// Initialize obstacles
@@ -37,7 +46,9 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	// Initialize personnes
 	int x, y;
 	for (int i = 0; i < people; i++) {
+
 		Personne* p;
+
 		// while we have not found a proper cell for this personne
 		while (1) {
 			x = rand() % GRID_SIZE_X;
@@ -66,70 +77,81 @@ void Simulation::fill_grid(Entity* e) {
 	pos[0] = e->get_x();
 	pos[1] = e->get_y();
 
-	std::vector<unsigned int> size(2);
-	size[0] = e->get_size_x();
-	size[1] = e->get_size_y();
+    std::vector<unsigned int> size(2);
+    size[0] = e->get_size_x();
+    size[1] = e->get_size_y();
 
-	for (unsigned int x = 0; x < size[0]; ++x) {
-		for (unsigned int y = 0; y < size[1]; ++y) {
-			this->dataGrid->setEntityAt(pos[0] + x, pos[1] + y, e);
-		}
-	}
-}
-
-Simulation::~Simulation()
-{
-	// Clean obstacles
-	this->obstacles.clear();
-
-	// Clean personnes
-	this->personnes.clear();
-}
-
-std::vector<Entity*> Simulation::get_vObstacles() {
-	return this->obstacles;
-}
-
-std::vector<Entity*> Simulation::get_vPersonnes() {
-	return this->personnes;
-}
-
-bool Simulation::isRunning() {
-	return (this->get_vPersonnes().size() > 0) ? true : false;
+    for (unsigned int x = 0; x < size[0]; ++x) {
+        for (unsigned int y = 0; y < size[1]; ++y) {
+            this->dataGrid->setEntityAt(pos[0] + x, pos[1] + y, e);
+        }
+    }
 }
 
 // Compute the next frame
-void Simulation::tick() {
-
-	if (this->get_vPersonnes().size() == 0) {
-		return;
-	}
-
-	// Move each personne to the escape zone
-	std::vector<Entity*>::iterator it;
-	for (it = this->personnes.begin(); it != this->personnes.end();) {
-
-		Personne* p = dynamic_cast<Personne*>(*it);
-		
-		// Apply action
-		p->move();
-
-		// If someone has reached the escape zone, remove it from the list
-		if (p->has_escaped()) {
-			
-			// rm from list
-			// Fetch next valid iterator
-			it = this->personnes.erase(it);
-			
-			// delete personne
-			delete p;
-		}
-		else {
-			it++; // Fetch next element in the list
-		}
-	}
+void *tick(void *arguments) {
+    pthread_mutex_lock(&simulation_mutex);
+    struct arg_struct *args = (struct arg_struct *) arguments;
+    int nb = args->thread_number;
+    Simulation *instance = args->instance;
+    Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
+    pthread_mutex_unlock(&simulation_mutex);
+    while (!p->has_escaped()) {
+        pthread_mutex_lock(&simulation_mutex);
+        p->move();
+        std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
+        pthread_mutex_unlock(&simulation_mutex);
+        sleep(1);
+    }
+    instance->get_vPersonnes().erase(instance->get_vPersonnes().begin() + nb);
+    delete p;
+    return NULL;
 }
 
+void create_thread(pthread_t thread_persons[], int i, Simulation *pSimulation) {
+    auto *args = new arg_struct();
+    args->instance = pSimulation;
+    args->thread_number = i;
+    int error = pthread_create(&thread_persons[i], NULL, &tick, (void *) args);
+    if (error) {
+        std::cout << "Error when creating threads";
+    }
+}
+
+void Simulation::start() {
+    if (four_threads_cond) {
+        //TODO split
+    } else {
+        pthread_t thread_persons[(int) people];
+        for (int i = 0; i < people; ++i) {
+            create_thread(thread_persons, i, this);
+        }
+        for (int j = 0; j < people; j++) {
+            pthread_join(thread_persons[j], NULL);
+        }
+
+    }
+}
+
+Simulation::~Simulation() {
+    // Clean obstacles
+    this->obstacles.clear();
+
+    // Clean personnes
+    this->personnes.clear();
+}
+
+std::vector<Entity *> Simulation::get_vObstacles() {
+    return this->obstacles;
+}
+
+std::vector<Entity *> Simulation::get_vPersonnes() {
+    return this->personnes;
+}
+
+bool Simulation::isRunning() {
+    return (this->get_vPersonnes().size() > 0) ? true : false;
+}
 
 /**
  * Compute shortest escape point from the given position

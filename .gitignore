@@ -303,3 +303,8 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+
+#Cmake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

@@ -1,5 +1,3 @@
-#include "getopt.h"
-#include <cmath>
 #include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
@@ -150,6 +148,7 @@ int main(int argc, char *argv[]) {
     // Var repository
 	srand(time(NULL));														// RNG
     bool end_of_simulation = false;											// Main loop
+	std::cout << "[Info] Initialization...";
     Simulation* simu = new Simulation(people,four_threads,bench_time);		// Simulation handle
 
 	#ifdef W_UI
@@ -194,6 +193,9 @@ int main(int argc, char *argv[]) {
 	#endif
 
 	int tick_count = 0;
+    simu->start();
+
+    //Unreachable for now
     while (!end_of_simulation) {
 
 		#ifdef W_UI
@@ -235,26 +237,14 @@ int main(int argc, char *argv[]) {
 		SDL_Delay(10);
 
 		/* END: OF UI SPECIFIC */
-
 		#endif
 
 		// Check simulation state
 		end_of_simulation = !simu->isRunning();
-		if (end_of_simulation) {
-			continue;
-		}
-
-		// Compute next frame
-		simu->tick();
-		tick_count++;
-
-		// DBG
-		std::cout << "[Info] Tick(" << std::to_string(tick_count) << ")";
-		getchar();
     }
 
-	// DBG
-	std::cout << "[Info] End of simulation";
+	// Print
+	std::cout << "[Info] End of simulation. Press a key to exit...";
 	getchar();
 
     // End Of Simulation

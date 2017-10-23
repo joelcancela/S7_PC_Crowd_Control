@@ -1,5 +1,7 @@
-#pragma once
-
+#include <mutex>
+#include <cstring>
+#include <chrono>
+#include <thread>
 #include "shared_header.h"
 #include "Entity.h"
 #include "Datagrid.h"
@@ -14,18 +16,17 @@ class Simulation
 	int bench_time_cond;
 
 	Datagrid* dataGrid;
-
+    std::vector<Entity*> personnes;
 	std::vector<Entity*> obstacles;
-	std::vector<Entity*> personnes;
-	
+
 public:
 	Simulation(double people, int four_threads_cond, int bench_time_cond);
 	~Simulation();
 	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
+	void start();
 	bool isRunning();
-	void tick();
 
 private:
 	static std::vector<int> azimuth(int, int);				// Helper for creating a path
