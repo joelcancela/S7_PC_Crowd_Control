@@ -16,3 +16,27 @@ public:
 protected:
 	Command(Datagrid*);
 };
+
+// North-West
+class CommandNW : public Command {
+public:
+	CommandNW(Datagrid*);
+	~CommandNW();
+	bool exec(int, int);
+};
+
+// North
+class CommandN : public Command {
+public:
+	CommandN(Datagrid*);
+	~CommandN();
+	bool exec(int, int);
+};
+
+// West
+class CommandW : public Command {
+public:
+	CommandW(Datagrid*);
+	~CommandW();
+	bool exec(int, int);
+};

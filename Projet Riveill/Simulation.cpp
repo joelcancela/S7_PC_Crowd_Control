@@ -10,6 +10,8 @@ Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond
 	this->dataGrid = new Datagrid();
 
 	// Initialize obstacles
+	//
+	// Constraints:
 	// max{x=459, y=114}
 	// min{x=10, y=10}
 	Obstacle* o = new Obstacle(10, 10);
@@ -188,7 +190,87 @@ std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
 	}
 }
 
+/**
+ * Compute shortest escape path
+ */
 std::stack<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth)
 {
-	return std::stack<Command*>();
+	// Commands stack
+	std::stack<Command*> path;
+	std::stack<Command*> iPath;
+
+	// Sorted list of distances
+	std::map<double, Command*> pathSort;
+
+	// Commands
+	Command* mv_n = new CommandN(this->dataGrid);
+	Command* mv_nw = new CommandNW(this->dataGrid);
+	Command* mv_w = new CommandW(this->dataGrid);
+
+	while (1) {
+
+		// if we have reached the escape point
+		// break, we have finished
+		if (pos_x == azimuth[0] && pos_y == azimuth[1]) {
+			break;
+		}
+
+		// Flush selector
+		pathSort.clear();
+
+		// Compute the three posibilities
+		// Only if the next position is not blocked by an Obstacle
+
+		std::vector<int> n;
+		n[0] = pos_x;
+		n[1] = pos_y - 1;
+		if (this->dataGrid->getEntityAt(n[0], n[1]) == nullptr) {
+			double len_n = sqrt(
+				(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
+				(azimuth[1] - n[1]) * (azimuth[1] - n[1])
+			);
+			pathSort.insert(std::pair<double, Command*>(len_n, mv_n));
+		}
+
+		std::vector<int> nw;
+		nw[0] = pos_x - 1;
+		nw[1] = pos_y - 1;
+		if (this->dataGrid->getEntityAt(nw[0], nw[1]) == nullptr) {
+			double len_nw = sqrt(
+				(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
+				(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
+			);
+			pathSort.insert(std::pair<double, Command*>(len_nw, mv_nw));
+		}
+		
+		std::vector<int> w;
+		w[0] = pos_x - 1;
+		w[1] = pos_y;
+		if (this->dataGrid->getEntityAt(w[0], w[1]) == nullptr) {
+			double len_w = sqrt(
+				(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
+				(azimuth[1] - w[1]) * (azimuth[1] - w[1])
+			);
+			pathSort.insert(std::pair<double, Command*>(len_w, mv_w));
+		}
+
+		// Pick the command that brings us closer to the azimuth
+		std::map<double, Command*>::iterator it = pathSort.begin();
+		for (it = pathSort.begin(); it != pathSort.end(); ++it) {
+			iPath.push(it->second);
+			break;
+		}
+
+		// Update {x, y} for the next iteration
+
+	}
+
+	// Reverse stack
+	while (!iPath.empty()) {
+		path.push(iPath.top());
+		iPath.pop();
+	}
+
+	return path;
 }
+
