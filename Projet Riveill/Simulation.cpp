@@ -1,6 +1,7 @@
 #include "Simulation.h"
 
 void *tick(void *arguments);
+
 static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct arg_struct {
@@ -8,74 +9,73 @@ struct arg_struct {
     int thread_number;
 };
 
-Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond)
-{
-	// Update simulation properties
-	this->people = people;
-	this->four_threads_cond = four_threads_cond;
-	this->bench_time_cond = bench_time_cond;
+Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond) {
+    // Update simulation properties
+    this->people = people;
+    this->four_threads_cond = four_threads_cond;
+    this->bench_time_cond = bench_time_cond;
 
-	// Data model
-	this->dataGrid = new Datagrid();
+    // Data model
+    this->dataGrid = new Datagrid();
 
-	// Initialize obstacles
-	//
-	// Constraints:
-	// max{x=459, y=114}
-	// min{x=10, y=10}
-	Obstacle* o = new Obstacle(10, 10);
-	this->obstacles.push_back(o);
-	this->fill_grid(o);
+    // Initialize obstacles
+    //
+    // Constraints:
+    // max{x=459, y=114}
+    // min{x=10, y=10}
+    Obstacle *o = new Obstacle(10, 10);
+    this->obstacles.push_back(o);
+    this->fill_grid(o);
 
-	o = new Obstacle(76, 75);
-	this->obstacles.push_back(o);
-	this->fill_grid(o);
+    o = new Obstacle(76, 75);
+    this->obstacles.push_back(o);
+    this->fill_grid(o);
 
-	o = new Obstacle(230, 64);
-	this->obstacles.push_back(o);
-	this->fill_grid(o);
+    o = new Obstacle(230, 64);
+    this->obstacles.push_back(o);
+    this->fill_grid(o);
 
-	o = new Obstacle(459, 50);
-	this->obstacles.push_back(o);
-	this->fill_grid(o);
+    o = new Obstacle(459, 50);
+    this->obstacles.push_back(o);
+    this->fill_grid(o);
 
-	o = new Obstacle(150, 114);
-	this->obstacles.push_back(o);
-	this->fill_grid(o);
+    o = new Obstacle(150, 114);
+    this->obstacles.push_back(o);
+    this->fill_grid(o);
 
-	// Initialize personnes
-	int x, y;
-	for (int i = 0; i < people; i++) {
+    // Initialize personnes
+    int x, y;
+    for (int i = 0; i < people; i++) {
 
-		Personne* p;
+        Personne *p;
 
-		// while we have not found a proper cell for this personne
-		while (1) {
-			x = rand() % GRID_SIZE_X;
-			y = rand() % GRID_SIZE_Y;
+        // while we have not found a proper cell for this personne
+        while (1) {
+            x = rand() % GRID_SIZE_X;
+            y = rand() % GRID_SIZE_Y;
 
-			if (this->dataGrid->getEntityAt(x,y) == nullptr) {
+            if (this->dataGrid->getEntityAt(x, y) == nullptr) {
 
-				// Compute Azimuth
-				std::vector<int> az = azimuth(x, y);
+                // Compute Azimuth
+                std::vector<int> az = azimuth(x, y);
 
-				// Compute Path
-				std::queue<Command*> pa = path(x, y, az);
+                // Compute Path
+                std::queue<Command *> pa = path(x, y, az);
 
-				// Create new Personne
-				p = new Personne(x, y, pa);
-				this->personnes.push_back(p);
-				this->fill_grid(p);
-				break;
-			}
-		}
-	}
+                // Create new Personne
+                p = new Personne(x, y, pa);
+                this->personnes.push_back(p);
+                this->fill_grid(p);
+                break;
+            }
+        }
+    }
 }
 
-void Simulation::fill_grid(Entity* e) {
-	std::vector<int> pos(2);
-	pos[0] = e->get_x();
-	pos[1] = e->get_y();
+void Simulation::fill_grid(Entity *e) {
+    std::vector<int> pos(2);
+    pos[0] = e->get_x();
+    pos[1] = e->get_y();
 
     std::vector<unsigned int> size(2);
     size[0] = e->get_size_x();
@@ -101,10 +101,9 @@ void *tick(void *arguments) {
         p->move();
         std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
         pthread_mutex_unlock(&simulation_mutex);
-        sleep(1);
+        usleep(100000);
     }
-    instance->get_vPersonnes().erase(instance->get_vPersonnes().begin() + nb);
-    delete p;
+    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
     return NULL;
 }
 
@@ -128,6 +127,11 @@ void Simulation::start() {
         }
         for (int j = 0; j < people; j++) {
             pthread_join(thread_persons[j], NULL);
+        }
+        while(!get_vPersonnes().empty()){
+            Personne *p = dynamic_cast<Personne *>(personnes[0]);
+            personnes.erase(personnes.begin());
+            delete p;
         }
 
     }
@@ -158,176 +162,176 @@ bool Simulation::isRunning() {
  */
 std::vector<int> Simulation::azimuth(int pos_x, int pos_y) {
 
-	// Sorted list of azimuth
-	std::map<double, std::vector<int>> azimuthSort;
+    // Sorted list of azimuth
+    std::map<double, std::vector<int>> azimuthSort;
 
-	// List of escape points
-	std::queue<std::vector<int>> vEscapePoints;
+    // List of escape points
+    std::queue<std::vector<int>> vEscapePoints;
 
-	std::vector<int> exitA(2); // {0, -1}
-	exitA[0] = 0;
-	exitA[1] = -1;
-	std::vector<int> exitB(2); // {1, -1}
-	exitB[0] = 1;
-	exitB[1] = -1;
-	std::vector<int> exitC(2); // {-1, 0}
-	exitC[0] = -1;
-	exitC[1] = 0;
-	std::vector<int> exitD(2); // {-1, 1}
-	exitD[0] = -1;
-	exitD[1] = 1;
+    std::vector<int> exitA(2); // {0, -1}
+    exitA[0] = 0;
+    exitA[1] = -1;
+    std::vector<int> exitB(2); // {1, -1}
+    exitB[0] = 1;
+    exitB[1] = -1;
+    std::vector<int> exitC(2); // {-1, 0}
+    exitC[0] = -1;
+    exitC[1] = 0;
+    std::vector<int> exitD(2); // {-1, 1}
+    exitD[0] = -1;
+    exitD[1] = 1;
 
-	vEscapePoints.push(exitA);
-	vEscapePoints.push(exitB);
-	vEscapePoints.push(exitC);
-	vEscapePoints.push(exitD);
+    vEscapePoints.push(exitA);
+    vEscapePoints.push(exitB);
+    vEscapePoints.push(exitC);
+    vEscapePoints.push(exitD);
 
-	while (!vEscapePoints.empty()) {
+    while (!vEscapePoints.empty()) {
 
-		// Point
-		std::vector<int> p(2);
-		p = vEscapePoints.front();
-		vEscapePoints.pop();
+        // Point
+        std::vector<int> p(2);
+        p = vEscapePoints.front();
+        vEscapePoints.pop();
 
-		// Vector
-		std::vector<int> v(2);
+        // Vector
+        std::vector<int> v(2);
 
-		// Compute vector
-		v[0] = p[0] - pos_x;
-		v[1] = p[1] - pos_y;
+        // Compute vector
+        v[0] = p[0] - pos_x;
+        v[1] = p[1] - pos_y;
 
-		// Compute length
-		double size = sqrt(v[0] * v[0] + v[1] * v[1]);
+        // Compute length
+        double size = sqrt(v[0] * v[0] + v[1] * v[1]);
 
-		// Add to sorted list
-		azimuthSort.insert(std::pair<double, std::vector<int>>(size, p));
-	}
+        // Add to sorted list
+        azimuthSort.insert(std::pair<double, std::vector<int>>(size, p));
+    }
 
-	// Set shortest point as azimuth
-	std::map<double, std::vector<int>>::iterator it = azimuthSort.begin();
-	for (it = azimuthSort.begin(); it != azimuthSort.end(); ++it) {
-		return it->second;
-	}
+    // Set shortest point as azimuth
+    std::map<double, std::vector<int>>::iterator it = azimuthSort.begin();
+    for (it = azimuthSort.begin(); it != azimuthSort.end(); ++it) {
+        return it->second;
+    }
 
-	return std::vector<int>(2, 0);
+    return std::vector<int>(2, 0);
 }
 
 /**
  * Compute shortest escape path
  */
-std::queue<Command*> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth)
-{
-	// Commands stack
-	std::queue<Command*> path;
+std::queue<Command *> Simulation::path(int pos_x, int pos_y, std::vector<int> azimuth) {
+    // Commands stack
+    std::queue<Command *> path;
 
-	// Sorted list of distances
-	std::map<double, Command*> pathSort;
+    // Sorted list of distances
+    std::map<double, Command *> pathSort;
 
-	// Commands
-	CommandN* mv_n = new CommandN(this->dataGrid);
-	CommandNW* mv_nw = new CommandNW(this->dataGrid);
-	CommandW* mv_w = new CommandW(this->dataGrid);
+    // Commands
+    CommandN *mv_n = new CommandN(this->dataGrid);
+    CommandNW *mv_nw = new CommandNW(this->dataGrid);
+    CommandW *mv_w = new CommandW(this->dataGrid);
 
-	while (1) {
+    while (1) {
 
-		// if we have reached the escape point
-		// break, we have finished
-		if (pos_x == azimuth[0] && pos_y == azimuth[1]) {
-			break;
-		}
+        // if we have reached the escape point
+        // break, we have finished
+        if (pos_x == azimuth[0] && pos_y == azimuth[1]) {
+            break;
+        }
 
-		// Flush selector
-		pathSort.clear();
+        // Flush selector
+        pathSort.clear();
 
-		// Compute the three posibilities
-		// Only if the next position is not blocked by an Obstacle
-		// OK for an escape, KO for border traversal
+        // Compute the three posibilities
+        // Only if the next position is not blocked by an Obstacle
+        // OK for an escape, KO for border traversal
 
-		// north
-		std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
-		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(n[0], n[1])) == nullptr) {
-			if (Command::is_an_escape_zone(n[0], n[1]) || !Command::is_oob(n[0], n[1])) {
-				double len_n = sqrt(
-					(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
-					(azimuth[1] - n[1]) * (azimuth[1] - n[1])
-				);
-				pathSort.insert(std::pair<double, Command*>(len_n, mv_n));
-			}
-		}
+        // north
+        std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
+        if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(n[0], n[1])) == nullptr) {
+            if (Command::is_an_escape_zone(n[0], n[1]) || !Command::is_oob(n[0], n[1])) {
+                double len_n = sqrt(
+                        (azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
+                        (azimuth[1] - n[1]) * (azimuth[1] - n[1])
+                );
+                pathSort.insert(std::pair<double, Command *>(len_n, mv_n));
+            }
+        }
 
-		// north-west
-		std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
-		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(nw[0], nw[1])) == nullptr) {
-			if (Command::is_an_escape_zone(nw[0], nw[1]) || !Command::is_oob(nw[0], nw[1])) {
-				double len_nw = sqrt(
-					(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
-					(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
-				);
-				pathSort.insert(std::pair<double, Command*>(len_nw, mv_nw));
-			}
-		}
-		
-		// west
-		std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
-		if (dynamic_cast<Obstacle*>(this->dataGrid->getEntityAt(w[0], w[1])) == nullptr) {
-			if (Command::is_an_escape_zone(w[0], w[1]) || !Command::is_oob(w[0], w[1])) {
-				double len_w = sqrt(
-					(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
-					(azimuth[1] - w[1]) * (azimuth[1] - w[1])
-				);
-				pathSort.insert(std::pair<double, Command*>(len_w, mv_w));
-			}
-		}
+        // north-west
+        std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
+        if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(nw[0], nw[1])) == nullptr) {
+            if (Command::is_an_escape_zone(nw[0], nw[1]) || !Command::is_oob(nw[0], nw[1])) {
+                double len_nw = sqrt(
+                        (azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
+                        (azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
+                );
+                pathSort.insert(std::pair<double, Command *>(len_nw, mv_nw));
+            }
+        }
 
-		// Pick the command that brings us closer to the azimuth
-		std::map<double, Command*>::iterator it = pathSort.begin();
-		for (it = pathSort.begin(); it != pathSort.end(); ++it) {
+        // west
+        std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
+        if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(w[0], w[1])) == nullptr) {
+            if (Command::is_an_escape_zone(w[0], w[1]) || !Command::is_oob(w[0], w[1])) {
+                double len_w = sqrt(
+                        (azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
+                        (azimuth[1] - w[1]) * (azimuth[1] - w[1])
+                );
+                pathSort.insert(std::pair<double, Command *>(len_w, mv_w));
+            }
+        }
 
-			Command* c = it->second;
-			path.push(c);
+        // Pick the command that brings us closer to the azimuth
+        std::map<double, Command *>::iterator it = pathSort.begin();
+        for (it = pathSort.begin(); it != pathSort.end(); ++it) {
 
-			// Update {x, y} for the next iteration
-			std::vector<int> next_pos(2);
+            Command *c = it->second;
+            path.push(c);
 
-			// N
-			if (dynamic_cast<CommandN*>(c) != nullptr) {
-				next_pos = this->getNextPos(dynamic_cast<CommandN*>(c), pos_x, pos_y);
-			}
-			// NW
-			else if (dynamic_cast<CommandNW*>(c) != nullptr) {
-				next_pos = this->getNextPos(dynamic_cast<CommandNW*>(c), pos_x, pos_y);
-			}
-			// W
-			else {
-				next_pos = this->getNextPos(dynamic_cast<CommandW*>(c), pos_x, pos_y);
-			}
+            // Update {x, y} for the next iteration
+            std::vector<int> next_pos(2);
 
-			pos_x = next_pos[0];
-			pos_y = next_pos[1];
+            // N
+            if (dynamic_cast<CommandN *>(c) != nullptr) {
+                next_pos = this->getNextPos(dynamic_cast<CommandN *>(c), pos_x, pos_y);
+            }
+                // NW
+            else if (dynamic_cast<CommandNW *>(c) != nullptr) {
+                next_pos = this->getNextPos(dynamic_cast<CommandNW *>(c), pos_x, pos_y);
+            }
+                // W
+            else {
+                next_pos = this->getNextPos(dynamic_cast<CommandW *>(c), pos_x, pos_y);
+            }
 
-			break;
-		}
-	}
+            pos_x = next_pos[0];
+            pos_y = next_pos[1];
 
-	return path;
+            break;
+        }
+    }
+
+    return path;
 }
 
-std::vector<int> Simulation::getNextPos(CommandN* n, int x, int y) {
-	std::vector<int> r(2);
-	r[0] = x;
-	r[1] = y - 1;
-	return r;
+std::vector<int> Simulation::getNextPos(CommandN *n, int x, int y) {
+    std::vector<int> r(2);
+    r[0] = x;
+    r[1] = y - 1;
+    return r;
 }
 
-std::vector<int> Simulation::getNextPos(CommandNW* nw, int x, int y) {
-	std::vector<int> r(2);
-	r[0] = x - 1;
-	r[1] = y - 1;
-	return r;
+std::vector<int> Simulation::getNextPos(CommandNW *nw, int x, int y) {
+    std::vector<int> r(2);
+    r[0] = x - 1;
+    r[1] = y - 1;
+    return r;
 }
-std::vector<int> Simulation::getNextPos(CommandW* w, int x, int y) {
-	std::vector<int> r(2);
-	r[0] = x - 1;
-	r[1] = y;
-	return r;
+
+std::vector<int> Simulation::getNextPos(CommandW *w, int x, int y) {
+    std::vector<int> r(2);
+    r[0] = x - 1;
+    r[1] = y;
+    return r;
 }
