@@ -7,8 +7,6 @@ include_directories(libs/include)
 set(SOURCE_FILES
         Command.cpp
         Command.h
-        CommandMove.cpp
-        CommandMove.h
         Datagrid.h
         Entity.cpp
         Entity.h
