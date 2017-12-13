@@ -19,15 +19,15 @@ Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_tim
     if (four_threads_cond > 0) {
 
         // Data model as ARENA DIVIDED
-        this->dA = new Datagrid(0, 0, 10,       people / 4);    // SEED = n°10
-        this->dB = new Datagrid(128, 0, 20,     people / 4);    // SEED = n°20
-        this->dC = new Datagrid(0, 65, 32,      people / 4);    // SEED = n°32
-        this->dD = new Datagrid(128, 65, 48,    people / 4);    // SEED = n°48
+        this->dA = new Datagrid(0, 0, 10,       people / 4, 2);    // SEED = n°10
+        this->dB = new Datagrid(128, 0, 20,     people / 4, 2);    // SEED = n°20
+        this->dC = new Datagrid(0, 65, 32,      people / 4, 2);    // SEED = n°32
+        this->dD = new Datagrid(128, 65, 48,    people / 4, 2);    // SEED = n°48
     }
     else {
 
         // Data model as ARENA
-        this->simpleArena = new Datagrid(0, 0, 64, people); // SEED = n°64
+        this->simpleArena = new Datagrid(0, 0, 64, people, 1);      // SEED = n°64
     }
 }
 

@@ -22,7 +22,7 @@ private:
 	Obstacle* obstacle;				// Obstacle handle
 
 public:
-	Datagrid(unsigned origin_x, unsigned int origin_y, unsigned int seed, unsigned int people) {
+	Datagrid(unsigned origin_x, unsigned int origin_y, unsigned int seed, unsigned int people, int shapeRatio) {
 
 		// Set grid origin
 		this->origin_x = origin_x;
@@ -50,8 +50,8 @@ public:
 
 			// while we have not found a proper cell for this personne
 			while (true) {
-				x = rand() % GRID_SIZE_X;
-				y = rand() % GRID_SIZE_Y;
+				x = rand() % (GRID_SIZE_X / shapeRatio);
+				y = rand() % (GRID_SIZE_Y / shapeRatio);
 
 				if (this->dataGrid[x][y] == nullptr) {
 
