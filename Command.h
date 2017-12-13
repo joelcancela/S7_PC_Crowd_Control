@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMMAND_H
+#define COMMAND_H
 
 #include "Datagrid.h"
 
@@ -19,7 +20,7 @@ protected:
 	 *
 	 * @return
 	 */
-	bool shared_exec(int, int, int, int, Datagrid*);
+	bool shared_exec(int, int, int, int, Personne*, Datagrid*);
 
 public:
 
@@ -31,7 +32,7 @@ public:
 	 * @param subject
 	 * @return bool
 	 */
-	virtual bool exec(int, int, Datagrid*);
+	virtual bool exec(int, int, Personne*, Datagrid*);
 
 	/**
 	 * Compute new position from given position
@@ -58,17 +59,19 @@ public:
 // North-West
 class CommandNW : public Command {
 public:
-	std::vector<int> getNextPos(int, int);
+	std::vector<int> getNextPos(int, int) override;
 };
 
 // North
 class CommandN : public Command {
 public:
-	std::vector<int> getNextPos(int, int);
+	std::vector<int> getNextPos(int, int) override;
 };
 
 // West
 class CommandW : public Command {
 public:
-	std::vector<int> getNextPos(int, int);
+	std::vector<int> getNextPos(int, int) override;
 };
+
+#endif

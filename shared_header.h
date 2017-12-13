@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHARED_HEADER_H
+#define SHARED_HEADER_H
 
 #include <cstdio>
 #include <cstdlib>
@@ -17,3 +18,5 @@
 
 #define GRID_SIZE_X 256
 #define GRID_SIZE_Y 64
+
+#endif

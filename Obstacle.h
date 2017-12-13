@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OBSTACLE_H
+#define OBSTACLE_H
 
 #include "shared_header.h"
 #include "Entity.h"
@@ -15,3 +16,4 @@ public:
 	std::string to_string();
 };
 
+#endif

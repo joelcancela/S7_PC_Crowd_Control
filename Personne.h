@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PERSONNE_H
+#define PERSONNE_H
 
 #include "shared_header.h"
 #include "Command.h"
@@ -9,14 +10,37 @@
 class Personne : public Entity
 {
 private:
-	std::queue<Command*> pathCommands;
+	// Has escaped the ARENA ?
 	bool escaped = false;
 
+	// On which grid the personne is associated ?
+	Datagrid* datagrid = nullptr;
+
 public:
-	Personne(int, int, std::queue<Command*>);
-	~Personne();
-	Entity* getNextDestination(Datagrid* grid);
-	std::string to_string();
+	Personne(int, int, Datagrid*);
+	/**
+	 * Computes the coordinates of the next hop
+	 * @return
+	 */
+	std::vector<int> getNextDestination();
+	/**
+	 * Gets escape attribute
+	 * @return
+	 */
 	bool has_escaped();
+	/**
+	 * Triggers the move
+	 */
 	void move();
+	/**
+	 * Gets string representation of the personne
+	 * @return
+	 */
+	std::string to_string();
+	/**
+	 * Change grid
+	 */
+	void updateGrid(Datagrid*);
 };
+
+#endif

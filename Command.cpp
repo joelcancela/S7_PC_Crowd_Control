@@ -1,6 +1,6 @@
 #include "Command.h"
 
-bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Datagrid *subject) {
+bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* p, Datagrid *subject) {
 
 	// fetch entity pointer
 	Entity* e = subject->getEntityAt(x, y);
@@ -38,9 +38,9 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Datagrid *
 	return true;
 }
 
-bool Command::exec(int x, int y, Datagrid *subject) {
+bool Command::exec(int x, int y, Personne *p, Datagrid *subject) {
 	std::vector<int> dest = this->getNextPos(x, y);
-	return this->shared_exec(x, y, dest[0], dest[1], subject);
+	return this->shared_exec(x, y, dest[0], dest[1], p, subject);
 }
 
 bool Command::is_an_escape_zone(int x, int y) {
@@ -78,10 +78,10 @@ bool Command::is_oob(int x, int y) {
 
 // North-West
 std::vector<int> CommandNW::getNextPos(int x, int y) {
-	std::vector<int> r(2);
-	r[0] = x - 1;
-	r[1] = y - 1;
-	return r;
+    std::vector<int> r(2);
+    r[0] = x - 1;
+    r[1] = y - 1;
+    return r;
 }
 
 // North

@@ -1,3 +1,6 @@
+#ifndef SIMULATION_H
+#define SIMULATION_H
+
 #include <mutex>
 #include <cstring>
 #include <chrono>
@@ -14,15 +17,22 @@ class Simulation
 	int four_threads_cond;
 	int bench_time_cond;
 
+	// PART I
+
+	Datagrid* arena;
+
 	// PART II PROJECT
+
 	// A | B
 	// __|__
 	// C | D
 	//   |
-	Datagrid dA;
-	Datagrid dB;
-	Datagrid dC;
-	Datagrid dD;
+
+	// ARENA MODEL
+	Datagrid* dA;
+	Datagrid* dB;
+	Datagrid* dC;
+	Datagrid* dD;
 
 public:
 	Simulation(double people, int four_threads_cond, int bench_time_cond);
@@ -32,3 +42,5 @@ public:
 	void start();
 	bool isRunning();
 };
+
+#endif

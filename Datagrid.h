@@ -1,23 +1,32 @@
-#pragma once
+#ifndef DATAGRID_H
+#define DATAGRID_H
 
 #include "shared_header.h"
 #include "Entity.h"
 #include "Obstacle.h"
 #include "Personne.h"
-#include "Command.h"
 
 class Datagrid {
 
 private:
+
+	// Grid absolute origin point
+	unsigned origin_x = 0;
+	unsigned origin_y = 0;
+
 	// Spacial container
 	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr };
 
 	/* List of contents */
-	std::vector<Entity*> personnes;
-	Obstacle* obstacle;
+	std::vector<Entity*> personnes;	// Personnes handler
+	Obstacle* obstacle;				// Obstacle handle
 
 public:
-	Datagrid(unsigned int seed, unsigned int people) {
+	Datagrid(unsigned origin_x, unsigned int origin_y, unsigned int seed, unsigned int people) {
+
+		// Set grid origin
+		this->origin_x = origin_x;
+		this->origin_y = origin_y;
 
 		// Initialize Obstacle position
 		switch (seed) {
@@ -26,11 +35,12 @@ public:
 			case 32:
 			case 48:
 			case 64:
-				obstacle = new Obstacle(seed, seed);
+				obstacle = new Obstacle(seed + origin_x, seed + origin_y);
 				break;
 			default:
-				obstacle = new Obstacle(32, 32);
+				obstacle = new Obstacle(32 + origin_x, 32 + origin_y);
 		}
+		this->fill_grid(obstacle);
 
 		// Initialize People
 		// people is the number of people to distribute over the grid
@@ -40,45 +50,61 @@ public:
 			Personne *p;
 
 			// while we have not found a proper cell for this personne
-			while (1) {
+			while (true) {
 				x = rand() % GRID_SIZE_X;
 				y = rand() % GRID_SIZE_Y;
 
-				if (this->getEntityAt(x, y) == nullptr) {
-
-					// Compute Azimuth
-					std::vector<int> az = azimuth(x, y);
-
-					// Compute Path
-					std::queue<Command *> pa = path(x, y, az);
+				if (this->dataGrid[x][y] == nullptr) {
 
 					// Create new Personne
-					p = new Personne(x, y, pa);
+					p = new Personne(x + origin_x, y + origin_y, this);
+
 					this->personnes.push_back(p);
-					this->fill_grid(p);
+					this->dataGrid[x][y] = p;
 					break;
 				}
 			}
 		}
 	}
 
-	~Datagrid() {
-	}
-
+	/**
+	 * Set entity at an absolute position among the grids
+	 *
+	 * @param x
+	 * @param y
+	 * @param e
+	 */
 	void setEntityAt(int x, int y, Entity* e) {
+
+		// Patch real coordinates
+		x -= this->origin_x;
+		y -= this->origin_y;
+
 		if (x >= 0 && y >= 0) {
 			dataGrid[x][y] = e;
 		}
 	}
 
+	/**
+	 * Get entity at an absolute position among the grids
+	 *
+	 * @param x
+	 * @param y
+	 * @param e
+	 */
 	Entity* getEntityAt(int x, int y) {
+
+		// Patch real coordinates
+		x -= this->origin_x;
+		y -= this->origin_y;
+
 		if (x >= 0 && y >= 0) {
 			return dataGrid[x][y];
 		}
 		return nullptr;
 	}
 
-	// =================================================================================================================
+private:
 
 	/**
 	 * Synchro between the grid and the entity position & size
@@ -98,162 +124,6 @@ public:
 			}
 		}
 	}
-
-	/**
-	 * Compute shortest escape point from the given position
-	 */
-	std::vector<int> azimuth(int pos_x, int pos_y) {
-
-		// Sorted list of azimuth
-		std::map<double, std::vector<int>> azimuthSort;
-
-		// List of escape points
-		std::queue<std::vector<int>> vEscapePoints;
-
-		std::vector<int> exitA(2); // {0, -1}
-		exitA[0] = 0;
-		exitA[1] = -1;
-		std::vector<int> exitB(2); // {1, -1}
-		exitB[0] = 1;
-		exitB[1] = -1;
-		std::vector<int> exitC(2); // {-1, 0}
-		exitC[0] = -1;
-		exitC[1] = 0;
-		std::vector<int> exitD(2); // {-1, 1}
-		exitD[0] = -1;
-		exitD[1] = 1;
-
-		vEscapePoints.push(exitA);
-		vEscapePoints.push(exitB);
-		vEscapePoints.push(exitC);
-		vEscapePoints.push(exitD);
-
-		while (!vEscapePoints.empty()) {
-
-			// Point
-			std::vector<int> p(2);
-			p = vEscapePoints.front();
-			vEscapePoints.pop();
-
-			// Vector
-			std::vector<int> v(2);
-
-			// Compute vector
-			v[0] = p[0] - pos_x;
-			v[1] = p[1] - pos_y;
-
-			// Compute length
-			double size = sqrt(v[0] * v[0] + v[1] * v[1]);
-
-			// Add to sorted list
-			azimuthSort.insert(std::pair<double, std::vector<int>>(size, p));
-		}
-
-		// Set shortest point as azimuth
-		std::map<double, std::vector<int>>::iterator it;
-		for (it = azimuthSort.begin(); it != azimuthSort.end();) {
-			return it->second;
-		}
-
-		return std::vector<int>(2, 0);
-	}
-
-	/**
-	 * Compute shortest escape path
-	 */
-	std::queue<Command *> path(int pos_x, int pos_y, std::vector<int> azimuth) {
-		// Commands stack
-		std::queue<Command *> path;
-
-		// Sorted list of distances
-		std::map<double, Command *> pathSort;
-
-		// Commands
-		CommandN *mv_n = 	new CommandN(this->dataGrid);
-		CommandNW *mv_nw = 	new CommandNW(this->dataGrid);
-		CommandW *mv_w = 	new CommandW(this->dataGrid);
-
-		while (1) {
-
-			// if we have reached the escape point
-			// break, we have finished
-			if (pos_x == azimuth[0] && pos_y == azimuth[1]) {
-				break;
-			}
-
-			// Flush selector
-			pathSort.clear();
-
-			// Compute the three posibilities
-			// Only if the next position is not blocked by an Obstacle
-			// OK for an escape, KO for border traversal
-
-			// north
-			std::vector<int> n = this->getNextPos(mv_n, pos_x, pos_y);
-			if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(n[0], n[1])) == nullptr) {
-				if (Command::is_an_escape_zone(n[0], n[1]) || !Command::is_oob(n[0], n[1])) {
-					double len_n = sqrt(
-							(azimuth[0] - n[0]) * (azimuth[0] - n[0]) +
-							(azimuth[1] - n[1]) * (azimuth[1] - n[1])
-					);
-					pathSort.insert(std::pair<double, Command *>(len_n, mv_n));
-				}
-			}
-
-			// north-west
-			std::vector<int> nw = this->getNextPos(mv_nw, pos_x, pos_y);
-			if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(nw[0], nw[1])) == nullptr) {
-				if (Command::is_an_escape_zone(nw[0], nw[1]) || !Command::is_oob(nw[0], nw[1])) {
-					double len_nw = sqrt(
-							(azimuth[0] - nw[0]) * (azimuth[0] - nw[0]) +
-							(azimuth[1] - nw[1]) * (azimuth[1] - nw[1])
-					);
-					pathSort.insert(std::pair<double, Command *>(len_nw, mv_nw));
-				}
-			}
-
-			// west
-			std::vector<int> w = this->getNextPos(mv_w, pos_x, pos_y);
-			if (dynamic_cast<Obstacle *>(this->dataGrid->getEntityAt(w[0], w[1])) == nullptr) {
-				if (Command::is_an_escape_zone(w[0], w[1]) || !Command::is_oob(w[0], w[1])) {
-					double len_w = sqrt(
-							(azimuth[0] - w[0]) * (azimuth[0] - w[0]) +
-							(azimuth[1] - w[1]) * (azimuth[1] - w[1])
-					);
-					pathSort.insert(std::pair<double, Command *>(len_w, mv_w));
-				}
-			}
-
-			// Pick the command that brings us closer to the azimuth
-			std::map<double, Command *>::iterator it = pathSort.begin();
-			for (it = pathSort.begin(); it != pathSort.end(); ++it) {
-
-				Command *c = it->second;
-				path.push(c);
-
-				// Update {x, y} for the next iteration
-				std::vector<int> next_pos(2);
-
-				// N
-				if (dynamic_cast<CommandN *>(c) != nullptr) {
-					next_pos = this->getNextPos(dynamic_cast<CommandN *>(c), pos_x, pos_y);
-				}
-					// NW
-				else if (dynamic_cast<CommandNW *>(c) != nullptr) {
-					next_pos = this->getNextPos(dynamic_cast<CommandNW *>(c), pos_x, pos_y);
-				}
-					// W
-				else {
-					next_pos = this->getNextPos(dynamic_cast<CommandW *>(c), pos_x, pos_y);
-				}
-
-				pos_x = next_pos[0];
-				pos_y = next_pos[1];
-
-				break;
-			}
-		}
-
-		return path;
-	}
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include "shared_header.h"
 
@@ -31,3 +32,4 @@ protected:
 	Entity();
 };
 
+#endif
