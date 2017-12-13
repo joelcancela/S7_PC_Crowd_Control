@@ -47,7 +47,7 @@ void *tick(void *arguments) {
         if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
             std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
             //pthread_cond_broadcast(&cond_var);
-            while (p->getNextDestination(instance->dataGrid) != nullptr) {
+            while (p->getNextDestination() != nullptr) {
                 usleep(1);
                 //pthread_cond_wait(&cond_var, &simulation_mutex);
             }
@@ -84,8 +84,8 @@ void Simulation::start() {
             pthread_join(thread_persons[j], NULL);
         }
         while (!get_vPersonnes().empty()) {
-            Personne *p = dynamic_cast<Personne *>(personnes[0]);
-            personnes.erase(personnes.begin());
+            Personne *p = dynamic_cast<Personne *>(simpleArena->get_vPersonnes()[0]);
+            simpleArena->get_vPersonnes().erase(simpleArena->get_vPersonnes().begin());
             delete p;
         }
 
