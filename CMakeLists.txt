@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.8)
 project(crowdControl)
 
 set(CMAKE_CXX_STANDARD 11)
-add_definitions(-DW_UI)
 set(SOURCE_FILES
         Command.cpp
         Command.h
@@ -18,7 +17,7 @@ set(SOURCE_FILES
         Simulation.cpp
         Simulation.h)
 if (UNIX AND NOT APPLE)#sudo apt-get install libsdl2-dev
-    add_definitions(-DW_UI)
+    #add_definitions(-DW_UI)
     INCLUDE(FindPkgConfig)
     PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
     INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
