@@ -42,71 +42,71 @@ void crowd_control_draw_borders(SDL_Renderer *renderer) {
  * SDL Drawer for the hostage escape zone
  */
 void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
+    SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
 
-	// TOP
-	for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
-		SDL_RenderDrawPoint(renderer, 0, i);
-		SDL_RenderDrawPoint(renderer, 1, i);
-	}
-	// LEFT
-	for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
-		SDL_RenderDrawPoint(renderer, i, 0);
-		SDL_RenderDrawPoint(renderer, i, 1);
-	}
-	
-	SDL_RenderPresent(renderer);
+    // TOP
+    for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
+        SDL_RenderDrawPoint(renderer, 0, i);
+        SDL_RenderDrawPoint(renderer, 1, i);
+    }
+    // LEFT
+    for (int i = 0; i < 2 + (2 * ZOOM_FACTOR); ++i) {
+        SDL_RenderDrawPoint(renderer, i, 0);
+        SDL_RenderDrawPoint(renderer, i, 1);
+    }
+
+    SDL_RenderPresent(renderer);
 }
 
 /**
  * DRAW entities px by px
  */
 void crowd_control_draw_entity(
-	SDL_Renderer* renderer,
-	Simulation* simulation,
-	Entity* e) {
+    SDL_Renderer* renderer,
+    Simulation* simulation,
+    Entity* e) {
 
-	std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
-	pos[0] = e->get_x() * ZOOM_FACTOR;
-	pos[1] = e->get_y() * ZOOM_FACTOR;
+    std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
+    pos[0] = e->get_x() * ZOOM_FACTOR;
+    pos[1] = e->get_y() * ZOOM_FACTOR;
 
-	std::vector<unsigned int> size(2);	// Size of the obstacle
-	size[0] = e->get_size_x() * ZOOM_FACTOR;
-	size[1] = e->get_size_y() * ZOOM_FACTOR;
+    std::vector<unsigned int> size(2);	// Size of the obstacle
+    size[0] = e->get_size_x() * ZOOM_FACTOR;
+    size[1] = e->get_size_y() * ZOOM_FACTOR;
 
-	for (unsigned int x = 0; x < size[0]; ++x) {
-		for (unsigned int y = 0; y < size[1]; ++y) {
-			SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
-		}
-	}
+    for (unsigned int x = 0; x < size[0]; ++x) {
+        for (unsigned int y = 0; y < size[1]; ++y) {
+            SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
+        }
+    }
 }
 
 /**
  * SDL Drawer for obstacles
  */
 void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation) {
-	SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
-	std::vector<Entity*> obstacles = simulation->get_vObstacles();
+    SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
+    std::vector<Entity*> obstacles = simulation->get_vObstacles();
 
-	for (unsigned int i = 0; i < obstacles.size(); ++i) {
-		crowd_control_draw_entity(renderer, simulation, obstacles[i]);
-	}
+    for (unsigned int i = 0; i < obstacles.size(); ++i) {
+        crowd_control_draw_entity(renderer, simulation, obstacles[i]);
+    }
 
-	SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 /**
  * SDL Drawer for personnes
  */
 void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation) {
-	SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
-	std::vector<Entity*> personnes = simulation->get_vPersonnes();
+    SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
+    std::vector<Entity*> personnes = simulation->get_vPersonnes();
 
-	for (unsigned int i = 0; i < personnes.size(); ++i) {
-		crowd_control_draw_entity(renderer, simulation, personnes[i]);
-	}
+    for (unsigned int i = 0; i < personnes.size(); ++i) {
+        crowd_control_draw_entity(renderer, simulation, personnes[i]);
+    }
 
-	SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 #endif
@@ -115,6 +115,7 @@ int main(int argc, char *argv[]) {
 
     int opt, bench_time = 0, four_threads = 0;
     double people = 1;
+
 
     while ((opt = getopt(argc, argv, "p:t:m")) != -1) {
         switch (opt) {
@@ -138,7 +139,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 'm':
                 //std::cout << "Option m" << std::endl;
-                bench_time = atoi(optarg);
+                bench_time = 1;
                 break;
             default:
                 break;
@@ -146,12 +147,12 @@ int main(int argc, char *argv[]) {
     }
 
     // Var repository
-	srand(time(NULL));														// RNG
-    bool end_of_simulation = false;											// Main loop
-	std::cout << "[Info] Initialization...";
-    Simulation* simu = new Simulation(people,four_threads,bench_time);		// Simulation handle
+    srand(time(NULL));                                                        // RNG
+    bool end_of_simulation = false;                                            // Main loop
+    std::cout << "[Info] Initialization...";
+    Simulation *simu = new Simulation(people, four_threads, bench_time);        // Simulation handle
 
-	#ifdef W_UI
+#ifdef W_UI
 
     /* SDL */
     SDL_Window *win = nullptr;					// Main SDL window
@@ -190,69 +191,85 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-	#endif
+#endif
 
-	int tick_count = 0;
-    simu->start();
+    int tick_count = 0;
+    if (bench_time) {
+        time_t start_clock, end_clock;//CLOCK
+        time(&start_clock);
+        clock_t begin_cpu = clock();//CPU
+        simu->start();
+        clock_t end_cpu = clock();
+        time(&end_clock);
+        double time_spent = (double) (end_cpu - begin_cpu) / CLOCKS_PER_SEC;
+        double seconds_since_start = difftime(end_clock, start_clock);
+        printf("time spent CPU: %f s\n", time_spent);
+        printf("clock time: %gs \n", seconds_since_start);
+
+    } else {
+        simu->start();
+    }
     //Unreachable for now
+#ifdef W_UI
     while (!end_of_simulation) {
 
-		#ifdef W_UI
-		/* START: UI SPECIFIC */
 
-		// Quit by event
-		if (SDL_PollEvent(&sdl_event)) {
-			if (sdl_event.type == SDL_QUIT) {
-				end_of_simulation = true;
-				continue;
-			}
-		}
+        /* START: UI SPECIFIC */
 
-		// Back in black. #ACDCROCKS
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        // Quit by event
+        if (SDL_PollEvent(&sdl_event)) {
+            if (sdl_event.type == SDL_QUIT) {
+                end_of_simulation = true;
+                continue;
+            }
+        }
 
-		// Clear the current rendering target with the drawing color.
-		SDL_RenderClear(renderer);
-		
-		// Render
-		SDL_RenderPresent(renderer);
+        // Back in black. #ACDCROCKS
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 
-		// Draw borders
-		crowd_control_draw_borders(renderer);
+        // Clear the current rendering target with the drawing color.
+        SDL_RenderClear(renderer);
 
-		// Draw escape zone
-		crowd_control_draw_escape_zone(renderer);
+        // Render
+        SDL_RenderPresent(renderer);
 
-		// Draw obstacles
-		crowd_control_draw_obstacles(renderer, simu);
+        // Draw borders
+        crowd_control_draw_borders(renderer);
 
-		// Draw people
-		crowd_control_draw_personnes(renderer, simu);
+        // Draw escape zone
+        crowd_control_draw_escape_zone(renderer);
 
-		// Update screen rendering
-		SDL_RenderPresent(renderer);
+        // Draw obstacles
+        crowd_control_draw_obstacles(renderer, simu);
 
-		// Give us time to see the window changes.
-		SDL_Delay(10);
+        // Draw people
+        crowd_control_draw_personnes(renderer, simu);
 
-		/* END: OF UI SPECIFIC */
-		#endif
+        // Update screen rendering
+        SDL_RenderPresent(renderer);
 
-		// Check simulation state
-		end_of_simulation = !simu->isRunning();
+        // Give us time to see the window changes.
+        SDL_Delay(10);
+
+
+
+        // Check simulation state
+        end_of_simulation = !simu->isRunning();
     }
 
-	// Print
-	std::cout << "[Info] End of simulation";
+    /* END: OF UI SPECIFIC */
+#endif
+    // Print
+    std::cout << "[Info] End of simulation";
 
     // End Of Simulation
     delete simu;
 
-	#ifdef W_UI
+#ifdef W_UI
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
-	#endif
-    
-	return EXIT_SUCCESS;
+#endif
+
+    return EXIT_SUCCESS;
 }
