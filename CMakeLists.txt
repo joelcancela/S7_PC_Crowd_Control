@@ -17,14 +17,14 @@ set(SOURCE_FILES
         shared_header.h
         Simulation.cpp
         Simulation.h)
-if (UNIX)#sudo apt-get install libsdl2-dev
+if (UNIX AND NOT APPLE)#sudo apt-get install libsdl2-dev
     add_definitions(-DW_UI)
     INCLUDE(FindPkgConfig)
     PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
     INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 endif ()
 add_executable(crowdControl ${SOURCE_FILES})
-if (UNIX)
+if (UNIX AND NOT APPLE)
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES})
 endif ()
 find_package(Threads REQUIRED)
