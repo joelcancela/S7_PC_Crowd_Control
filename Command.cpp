@@ -24,6 +24,10 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* 
 	if (subject->getEntityAt(shifted_x, shifted_y) != nullptr) {
 		return false;
 	}
+
+    // TODO : implement here the grid change.
+    // We have to find the condition and the correct grid given
+
 	if (is_oob(shifted_x, shifted_y)) {
 		return false;
 	}

@@ -19,7 +19,8 @@ class Simulation
 
 	// PART I
 
-	Datagrid* arena;
+	Datagrid* simpleArena;
+	int people;
 
 	// PART II PROJECT
 
@@ -35,9 +36,7 @@ class Simulation
 	Datagrid* dD;
 
 public:
-	Simulation(double people, int four_threads_cond, int bench_time_cond);
-	~Simulation();
-	std::vector<Entity*> get_vObstacles();
+	Simulation(unsigned int people, int four_threads_cond, int bench_time_cond);
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();

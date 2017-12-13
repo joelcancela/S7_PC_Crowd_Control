@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
         switch (opt) {
             case 'p':
                 //std::cout << "Option p" << std::endl;
-                people = pow(2.0, strtod(optarg, NULL));
+                people = pow(2.0, strtod(optarg, nullptr));
                 if (people < 1 || people > 512) {
                     std::cerr << "p must be between 0 & 9";
                     return 1;
@@ -147,10 +147,10 @@ int main(int argc, char *argv[]) {
     }
 
     // Var repository
-    srand(time(NULL));                                                        // RNG
+    srand(time(nullptr));                                                        // RNG
     bool end_of_simulation = false;                                            // Main loop
     std::cout << "[Info] Initialization...";
-    Simulation *simu = new Simulation(people, four_threads, bench_time);        // Simulation handle
+    Simulation *simu = new Simulation(static_cast<unsigned int>(people), four_threads, bench_time);        // Simulation handle
 
 #ifdef W_UI
 

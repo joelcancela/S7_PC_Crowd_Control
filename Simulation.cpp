@@ -10,21 +10,25 @@ struct arg_struct {
     int thread_number;
 };
 
-Simulation::Simulation(double people, int four_threads_cond, int bench_time_cond) {
+Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_time_cond) {
     // Update simulation properties
     this->people = people;
     this->four_threads_cond = four_threads_cond;
     this->bench_time_cond = bench_time_cond;
 
-    // Data model
-    this->dataGrid = new Datagrid();
+    if (four_threads_cond > 0) {
 
-    // Initialize obstacles
-    //
-    // Constraints:
-    // max{x=459, y=114}
-    // min{x=10, y=10}
+        // Data model as ARENA DIVIDED
+        this->dA = new Datagrid(0, 0, 10,       people / 4);    // SEED = n°10
+        this->dB = new Datagrid(128, 0, 20,     people / 4);    // SEED = n°20
+        this->dC = new Datagrid(0, 65, 32,      people / 4);    // SEED = n°32
+        this->dD = new Datagrid(128, 65, 48,    people / 4);    // SEED = n°48
+    }
+    else {
 
+        // Data model as ARENA
+        this->simpleArena = new Datagrid(0, 0, 64, people); // SEED = n°64
+    }
 }
 
 // Compute the next frame
@@ -88,25 +92,28 @@ void Simulation::start() {
     }
 }
 
-Simulation::~Simulation() {
-    // Clean obstacles
-    this->obstacles.clear();
-
-    // Clean personnes
-    this->personnes.clear();
-}
-
-std::vector<Entity *> Simulation::get_vObstacles() {
-    // TODO : must sum obstacle each grid
-    return nullptr;
-}
-
 std::vector<Entity *> Simulation::get_vPersonnes() {
-    // TODO : must sum obstacle each grid
-    return nullptr;
+    if (four_threads_cond > 0) {
+        std::vector<Entity *> vPersonnes;
+
+        // Merge four arrays
+        vPersonnes.reserve(
+                this->dA->get_vPersonnes().size() +
+                this->dB->get_vPersonnes().size() +
+                this->dC->get_vPersonnes().size() +
+                this->dD->get_vPersonnes().size()
+        ); // preallocate memory
+        vPersonnes.insert( vPersonnes.end(), this->dA->get_vPersonnes().begin(), this->dA->get_vPersonnes().end() );
+        vPersonnes.insert( vPersonnes.end(), this->dB->get_vPersonnes().begin(), this->dB->get_vPersonnes().end() );
+        vPersonnes.insert( vPersonnes.end(), this->dC->get_vPersonnes().begin(), this->dC->get_vPersonnes().end() );
+        vPersonnes.insert( vPersonnes.end(), this->dD->get_vPersonnes().begin(), this->dD->get_vPersonnes().end() );
+
+        return vPersonnes;
+    }
+    return this->simpleArena->get_vPersonnes();
 }
 
 bool Simulation::isRunning() {
-    return (this->get_vPersonnes().size() > 0) ? true : false;
+    return this->get_vPersonnes().size() > 0;
 }
 

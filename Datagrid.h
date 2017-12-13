@@ -34,7 +34,6 @@ public:
 			case 20:
 			case 32:
 			case 48:
-			case 64:
 				obstacle = new Obstacle(seed + origin_x, seed + origin_y);
 				break;
 			default:
@@ -103,6 +102,14 @@ public:
 		}
 		return nullptr;
 	}
+
+    /**
+     * Gets the current number of personnes associated to this grid
+     * @return
+     */
+    std::vector<Entity *> get_vPersonnes() {
+        return this->personnes;
+    }
 
 private:
 
