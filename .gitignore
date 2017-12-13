@@ -309,5 +309,6 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 crowdControl
+crowdControl.cbp
 getopt.h #For windows
 Makefile
