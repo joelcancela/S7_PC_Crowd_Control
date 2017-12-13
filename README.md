@@ -2,4 +2,4 @@
 
 cmake .
 make
-./Projet_Riveill [args]
+./crowdControl [args]
