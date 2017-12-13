@@ -1,34 +1,9 @@
 #include "Command.h"
 
-Command::Command(Datagrid* g) {
-	this->modelHandle = g;
-}
-
-Command::~Command() {}
-
-CommandNW::CommandNW(Datagrid* g) : Command(g) {
-	x_modifier=-1;
-	y_modifier=-1;
-}
-
-CommandN::CommandN(Datagrid* g) : Command(g) {
-	x_modifier=0;
-	y_modifier=-1;
-}
-
-CommandW::CommandW(Datagrid* g) : Command(g) {
-	x_modifier=-1;
-	y_modifier=0;
-}
-
-CommandN::~CommandN() {}
-CommandNW::~CommandNW() {}
-CommandW::~CommandW() {}
-
-bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
+bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Datagrid *subject) {
 
 	// fetch entity pointer
-	Entity* e = this->modelHandle->getEntityAt(x, y);
+	Entity* e = subject->getEntityAt(x, y);
 	if (e == nullptr) {
 		return false; // This should never happen
 	}
@@ -41,12 +16,12 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 		e->set_y(shifted_y);
 		
 		// remove from the dataModel
-		this->modelHandle->setEntityAt(x, y, nullptr);
+		subject->setEntityAt(x, y, nullptr);
 		return true;
 	}
 
 	// test if the shifted point is available
-	if (this->modelHandle->getEntityAt(shifted_x, shifted_y) != nullptr) {
+	if (subject->getEntityAt(shifted_x, shifted_y) != nullptr) {
 		return false;
 	}
 	if (is_oob(shifted_x, shifted_y)) {
@@ -58,9 +33,14 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y) {
 	e->set_y(shifted_y);
 
 	// move entity to the new position
-	this->modelHandle->setEntityAt(x, y, nullptr);
-	this->modelHandle->setEntityAt(shifted_x, shifted_y, e);
+	subject->setEntityAt(x, y, nullptr);
+	subject->setEntityAt(shifted_x, shifted_y, e);
 	return true;
+}
+
+bool Command::exec(int x, int y, Datagrid *subject) {
+	std::vector<int> dest = this->getNextPos(x, y);
+	return this->shared_exec(x, y, dest[0], dest[1], subject);
 }
 
 bool Command::is_an_escape_zone(int x, int y) {
@@ -90,25 +70,32 @@ bool Command::is_an_escape_zone(int x, int y) {
 }
 
 bool Command::is_oob(int x, int y) {
-
 	if (x < 0 || y < 0) {
 		return true;
 	}
-
 	return false;
 }
 
 // North-West
-bool CommandNW::exec(int x, int y) {
-	return this->shared_exec(x, y, x - 1, y - 1);
+std::vector<int> CommandNW::getNextPos(int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x - 1;
+	r[1] = y - 1;
+	return r;
 }
 
 // North
-bool CommandN::exec(int x, int y) {
-	return this->shared_exec(x, y, x, y - 1);
+std::vector<int> CommandN::getNextPos(int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x;
+	r[1] = y - 1;
+	return r;
 }
 
 // West
-bool CommandW::exec(int x, int y) {
-	return this->shared_exec(x, y, x - 1, y);
+std::vector<int> CommandW::getNextPos(int x, int y) {
+	std::vector<int> r(2);
+	r[0] = x - 1;
+	r[1] = y;
+	return r;
 }

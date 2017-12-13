@@ -2,43 +2,73 @@
 
 #include "Datagrid.h"
 
-/*
-* The Command interface.
-*/
+/**
+ * The Command interface
+ * must be implemented by each command
+ */
+
 class Command {
+
 protected:
-	Datagrid* modelHandle;
+
+	/**
+	 * Apply on the underlying datagrid (i.e, move the entity to another cell)
+	 * Update position in the dataModel : return true if success, false otherwise
+	 *
+	 * src / dest / subject
+	 *
+	 * @return
+	 */
+	bool shared_exec(int, int, int, int, Datagrid*);
+
 public:
-	int x_modifier;
-	int y_modifier;
-	Command(Datagrid*);
-	virtual ~Command();
-	virtual bool exec(int, int) = 0;					// Compute new position from current position : return true if success, false otherwise
-	bool shared_exec(int, int, int, int);				// Update position in the dataModel : return true if success, false otherwise
-	static bool is_an_escape_zone(int, int);			// Check if the given position is a valid escape position
-	static bool is_oob(int, int);						// Check if the position is out of bound (from the dataModel)
+
+	/**
+	 * Combined calls of getNextPos() and shared_exec()
+	 *
+	 * return true if success, false otherwise
+	 *
+	 * @param subject
+	 * @return bool
+	 */
+	virtual bool exec(int, int, Datagrid*);
+
+	/**
+	 * Compute new position from given position
+	 *
+	 * @return std::vector<int>
+	 */
+	virtual std::vector<int> getNextPos(int, int) = 0;
+
+	/**
+	 * Check if the given position is a valid escape position
+	 *
+	 * @return bool
+	 */
+	static bool is_an_escape_zone(int, int);
+
+	/**
+	 * Check if the given position is out of bound (from the dataModel)
+	 *
+	 * @return
+	 */
+	static bool is_oob(int, int);
 };
 
 // North-West
 class CommandNW : public Command {
 public:
-	CommandNW(Datagrid*);
-	~CommandNW();
-	bool exec(int, int);
+	std::vector<int> getNextPos(int, int);
 };
 
 // North
 class CommandN : public Command {
 public:
-	CommandN(Datagrid*);
-	~CommandN();
-	bool exec(int, int);
+	std::vector<int> getNextPos(int, int);
 };
 
 // West
 class CommandW : public Command {
 public:
-	CommandW(Datagrid*);
-	~CommandW();
-	bool exec(int, int);
+	std::vector<int> getNextPos(int, int);
 };

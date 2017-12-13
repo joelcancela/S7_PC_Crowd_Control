@@ -11,29 +11,24 @@
 
 class Simulation
 {
-	double people;
 	int four_threads_cond;
 	int bench_time_cond;
 
-	std::vector<Entity*> personnes;
-	std::vector<Entity*> obstacles;
+	// PART II PROJECT
+	// A | B
+	// __|__
+	// C | D
+	//   |
+	Datagrid dA;
+	Datagrid dB;
+	Datagrid dC;
+	Datagrid dD;
 
 public:
 	Simulation(double people, int four_threads_cond, int bench_time_cond);
 	~Simulation();
-	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();
-
-	Datagrid* dataGrid;
-private:
-	static std::vector<int> azimuth(int, int);				// Helper for creating a path
-	std::queue<Command*> path(int, int, std::vector<int>);	// Compute path to the azimuth
-
-	// More helpers for path finding
-	std::vector<int> getNextPos(CommandN*, int, int);
-	std::vector<int> getNextPos(CommandNW*, int, int);
-	std::vector<int> getNextPos(CommandW*, int, int);
 };
