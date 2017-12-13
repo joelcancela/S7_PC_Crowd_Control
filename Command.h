@@ -1,6 +1,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include "Personne.h"
 #include "Datagrid.h"
 
 /**

@@ -15,7 +15,7 @@ set(SOURCE_FILES
         Personne.h
         shared_header.h
         Simulation.cpp
-        Simulation.h)
+        Simulation.h Datagrid.cpp)
 if (UNIX AND NOT APPLE)#sudo apt-get install libsdl2-dev
     #add_definitions(-DW_UI)
     INCLUDE(FindPkgConfig)

@@ -5,12 +5,9 @@
 #include <cstring>
 #include <chrono>
 #include <thread>
+
 #include "shared_header.h"
-#include "Entity.h"
 #include "Datagrid.h"
-#include "Personne.h"
-#include "Obstacle.h"
-#include "Command.h"
 
 class Simulation
 {

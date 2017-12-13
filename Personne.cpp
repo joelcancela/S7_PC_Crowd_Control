@@ -1,4 +1,5 @@
 #include "Personne.h"
+#include "Command.h"
 
 Personne::Personne(int position_x, int position_y, Datagrid* d) {
     this->pos_x = position_x;
@@ -70,26 +71,29 @@ std::vector<int> Personne::getNextDestination() {
 
 void Personne::move() {
 
-    Command c;
+    Command* c = nullptr;
 
     std::vector<int> next = this->getNextDestination();
 
     switch (next[2]) {
         case 0:
-            c = CommandN();
+            c = new CommandN();
             break;
         case 1:
-            c = CommandNW();
+            c = new CommandNW();
             break;
         case 2:
-            c = CommandW();
+            c = new CommandW();
             break;
         default:
         case -1:
             return;
     }
 
-    c.exec(this->get_x(), this->get_y(), this, this->datagrid);
+    c->exec(this->get_x(), this->get_y(), this, this->datagrid);
+
+    delete c;
+    c = nullptr;
 
     // Test if we have escaped
     if (Command::is_an_escape_zone(this->get_x(), this->get_y())) {

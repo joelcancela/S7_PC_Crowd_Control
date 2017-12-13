@@ -1,8 +1,8 @@
 #ifndef PERSONNE_H
 #define PERSONNE_H
 
-#include "shared_header.h"
-#include "Command.h"
+#include "Entity.h"
+#include "Datagrid.h"
 
 #define PERSONNE_SIZE_X 1
 #define PERSONNE_SIZE_Y 1

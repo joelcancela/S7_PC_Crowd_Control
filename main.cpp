@@ -1,5 +1,4 @@
 #include "main.h"
-#include "shared_header.h"
 #include "Simulation.h"
 
 #ifdef W_UI

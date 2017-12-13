@@ -1,4 +1,5 @@
 #include "Simulation.h"
+#include "Personne.h"
 
 void *tick(void *arguments);
 
@@ -47,7 +48,7 @@ void *tick(void *arguments) {
         if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
             std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
             //pthread_cond_broadcast(&cond_var);
-            while (p->getNextDestination() != nullptr) {
+            while (p->getNextDestination()[2] == -1) {
                 usleep(1);
                 //pthread_cond_wait(&cond_var, &simulation_mutex);
             }
