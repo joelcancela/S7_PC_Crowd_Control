@@ -8,6 +8,7 @@
 
 #include "shared_header.h"
 #include "Datagrid.h"
+#include "Personne.h"
 
 class Simulation
 {
@@ -39,6 +40,7 @@ public:
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();
+	Datagrid* getNextDatagrid(Personne*);
 };
 
 #endif
