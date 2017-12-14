@@ -134,6 +134,8 @@ void Personne::updateGrid(Datagrid * d) {
     if (d == nullptr) {
         return;
     }
+    d->setEntityAt(this->get_x(), this->get_y(), nullptr);
+    std::cout << "WARNING : THE PERSONNE MAY BE LOST IF THE HANDLE IS NOT KEPT" << std::endl;
     this->datagrid = d;
 }
 
