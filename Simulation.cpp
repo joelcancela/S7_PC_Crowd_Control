@@ -2,6 +2,7 @@
 #include "Personne.h"
 
 void *tick(void *arguments);
+
 void *tick_four(void *arguments);
 
 static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -35,22 +36,23 @@ Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_tim
 }
 
 // Compute the next frame
-void *tick(void *arguments) {
+void *tick(void *arguments) {//FIXME HEREEEEEEEEEEEEEE GNEEEEEEEEEEEEE
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
-    while (!p->has_escaped()) {
-        int old_x = p->get_x();
-        int old_y = p->get_y();
-        p->move();
-        int new_x = p->get_x();
-        int new_y = p->get_y();
-        if ((old_x == new_x) && (old_y == new_y)) {
-            while (p->getNextDestination()[2] == -1) {
+
+    while (!p->has_escaped()) {//Tant que la personne n'est pas sortie
+        dest = p->getNextDestination();
+        while(pthread_mutex_trylock(dest.lock !=0)){//on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
+            while(dest.case!= nullptr){//si elle est occupé
+                pthread_cond_wait(dest.cond, dest.lock);//on dort et on relache le mutex
             }
-        } else {
-            std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplacé " << p->to_string() << std::endl;
+            //elle est pas occupé
+            p->move();//on bouge
+            pthread_mutex_unlock(dest.lock);//on relache le mutex
+            pthread_cond_broadcast(dest.cond);// on reveille les autres threads qui attendaient cette case
+
         }
     }
     std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
@@ -77,7 +79,7 @@ void create_four_thread(pthread_t thread_persons[], int i, Simulation *pSimulati
     }
 }
 
-void *tick_four(void *arguments) {//TODO
+void *tick_four(void *arguments) {//TODO 4 files d'attente boucle sur les personnes et les files en mutex
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
