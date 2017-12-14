@@ -135,7 +135,8 @@ void Personne::updateGrid(Datagrid * d) {
         return;
     }
     d->setEntityAt(this->get_x(), this->get_y(), nullptr);
-    std::cout << "WARNING : THE PERSONNE MAY BE LOST IF THE HANDLE IS NOT KEPT" << std::endl;
+    // TODO : detach this person from the grid (vector list)
+    // TODO : attach person to the destination grid (vector list)
     this->datagrid = d;
 }
 
