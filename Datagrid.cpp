@@ -2,6 +2,7 @@
 #include "Personne.h"
 
 Datagrid::Datagrid(unsigned int origin_x, unsigned int origin_y, unsigned int seed, unsigned int people, int shapeRatio) {
+
     // Set grid origin
     this->origin_x = origin_x;
     this->origin_y = origin_y;
@@ -37,7 +38,7 @@ Datagrid::Datagrid(unsigned int origin_x, unsigned int origin_y, unsigned int se
                 p = new Personne(x + origin_x, y + origin_y, this);
 
                 this->personnes.push_back(p);
-                this->dataGrid[x][y] = p;
+                this->dataGrid[x][y]->setEntity(p);
                 break;
             }
         }
@@ -51,7 +52,7 @@ void Datagrid::setEntityAt(int x, int y, Entity* e) {
     y -= this->origin_y;
 
     if (x >= 0 && y >= 0) {
-        dataGrid[x][y] = e;
+        dataGrid[x][y]->setEntity(e);
     }
 }
 
@@ -62,7 +63,7 @@ Entity* Datagrid::getEntityAt(int x, int y) {
     y -= this->origin_y;
 
     if (x >= 0 && y >= 0) {
-        return dataGrid[x][y];
+        return dataGrid[x][y]->getEntity();
     }
     return nullptr;
 }

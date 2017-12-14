@@ -5,8 +5,6 @@ void *tick(void *arguments);
 
 void *tick_four(void *arguments);
 
-static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
 static bool ended = false;
 
 struct arg_struct {
@@ -36,22 +34,24 @@ Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_tim
 }
 
 // Compute the next frame
-void *tick(void *arguments) {//FIXME HEREEEEEEEEEEEEEE GNEEEEEEEEEEEEE
+void *tick(void *arguments) {
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
 
-    while (!p->has_escaped()) {//Tant que la personne n'est pas sortie
-        dest = p->getNextDestination();
-        while(pthread_mutex_trylock(dest.lock !=0)){//on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
-            while(dest.case!= nullptr){//si elle est occupé
-                pthread_cond_wait(dest.cond, dest.lock);//on dort et on relache le mutex
+    while (!p->has_escaped()) {                             //Tant que la personne n'est pas sortie
+
+        const std::vector<int> &dest = p->getNextDestination(); // Fetch future coordinates
+                                                                // Fetch associated mutex of the given coordinates
+        while(pthread_mutex_trylock(dest.lock !=0)){        //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
+            while(dest.case!= nullptr){                     //si elle est occupé
+                pthread_cond_wait(dest.cond, dest.lock);    //on dort et on relache le mutex
             }
             //elle est pas occupé
-            p->move();//on bouge
-            pthread_mutex_unlock(dest.lock);//on relache le mutex
-            pthread_cond_broadcast(dest.cond);// on reveille les autres threads qui attendaient cette case
+            p->move();                                      //on bouge
+            pthread_mutex_unlock(dest.lock);                //on relache le mutex
+            pthread_cond_broadcast(dest.cond);              // on reveille les autres threads qui attendaient cette case
 
         }
     }

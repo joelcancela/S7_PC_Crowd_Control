@@ -1,6 +1,7 @@
 #include "shared_header.h"
 #include "Entity.h"
 #include "Obstacle.h"
+#include "Cell.h"
 
 #ifndef DATAGRID_H
 #define DATAGRID_H
@@ -14,7 +15,7 @@ private:
 	unsigned origin_y = 0;
 
 	// Spacial container
-	Entity* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr };
+	Cell* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr };
 
 	/* List of contents */
 	std::vector<Entity*> personnes;	// Personnes handler
