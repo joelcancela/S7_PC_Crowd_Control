@@ -6,7 +6,7 @@ void *tick(void *arguments);
 void *tick_four(void *arguments);
 
 static bool ended = false;
-
+static pthread_mutex_t lock_grid = PTHREAD_MUTEX_INITIALIZER;
 struct arg_struct {
     Simulation *instance;
     int thread_number;
@@ -40,20 +40,22 @@ void *tick(void *arguments) {
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
-
+    std::vector<int> dest;
     //Tant que la personne n'est pas sortie
     while (!p->has_escaped()) {
 
         // Fetch future coordinates
-        std::vector<int> dest = p->getNextDestination();
-
+        pthread_mutex_lock(&lock_grid);
+        dest = p->getNextDestination();
+        pthread_mutex_unlock(&lock_grid);
         // Fetch associated mutex of the given coordinates
         Cell *c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
 
-        if(c == nullptr){
+        if (c == nullptr) {
             // The person is about to escape on the next tick
             // Force move
             p->move();
+            std::cout << "fail num:(" << nb << ")" << std::endl;
             break;
         }
 
@@ -79,7 +81,8 @@ void *tick(void *arguments) {
         //on relache le mutex
         pthread_mutex_unlock(mutex);
     }
-    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
+    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << "("
+              << dest[0] << ";" << dest[1] << ")" << std::endl;
     return nullptr;
 }
 
