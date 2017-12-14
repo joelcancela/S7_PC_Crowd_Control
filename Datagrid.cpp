@@ -7,6 +7,12 @@ Datagrid::Datagrid(unsigned int origin_x, unsigned int origin_y, unsigned int se
     this->origin_x = origin_x;
     this->origin_y = origin_y;
 
+    for (int i = 0; i < (GRID_SIZE_X); i++) {
+        for (int j = 0; j < (GRID_SIZE_Y); j++) {
+            dataGrid[i][j] = new Cell();
+        }
+    }
+
     // Initialize Obstacle position
     switch (seed) {
         case 10:
