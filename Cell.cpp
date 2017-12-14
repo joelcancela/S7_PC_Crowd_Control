@@ -4,11 +4,6 @@
 
 #include "Cell.h"
 
-Cell::Cell(Entity *e) {
-    this->wrapped_entity = e;
-    pthread_mutex_trylock(this->mutex);
-}
-
 Entity *Cell::getEntity() {
     return this->wrapped_entity;
 }
@@ -23,4 +18,8 @@ pthread_cond_t *Cell::getCond() {
 
 pthread_mutex_t *Cell::getMutex() {
     return this->mutex;
+}
+
+bool Cell::isEmpty() {
+    return this->wrapped_entity == nullptr;
 }

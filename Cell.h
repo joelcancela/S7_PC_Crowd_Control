@@ -18,7 +18,6 @@ class Cell {
     pthread_cond_t *cond = PTHREAD_COND_INITIALIZER;
 
 public:
-    explicit Cell(Entity*);
     /**
      * Get entity
      *
@@ -45,6 +44,10 @@ public:
      * @return
      */
     pthread_mutex_t* getMutex();
+    /**
+     * Is empty
+     */
+    bool isEmpty();
 };
 
 #endif //CROWDCONTROL_CELL_H

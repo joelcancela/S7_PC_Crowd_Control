@@ -9,6 +9,7 @@
 
 class Personne : public Entity
 {
+
 private:
 	// Has escaped the ARENA ?
 	bool escaped = false;
@@ -37,6 +38,10 @@ public:
 	 * @return
 	 */
 	std::string to_string();
+	/**
+	 * Gets grid
+	 */
+	Datagrid *getDatagrid();
 	/**
 	 * Change grid
 	 */

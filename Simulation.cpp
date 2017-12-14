@@ -35,15 +35,23 @@ Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_tim
 
 // Compute the next frame
 void *tick(void *arguments) {
+
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
 
-    while (!p->has_escaped()) {                             //Tant que la personne n'est pas sortie
+    //Tant que la personne n'est pas sortie
+    while (!p->has_escaped()) {
 
-        const std::vector<int> &dest = p->getNextDestination(); // Fetch future coordinates
-                                                                // Fetch associated mutex of the given coordinates
+        // Fetch future coordinates
+        const std::vector<int> &dest = p->getNextDestination();
+
+        // Fetch associated mutex of the given coordinates
+        pthread_mutex_t mutex = *p->getDatagrid()->getCellAt(dest[0], dest[1])->getMutex();
+        pthread_cond_t cond = *p->getDatagrid()->getCellAt(dest[0], dest[1])->getCond();
+
+
         while(pthread_mutex_trylock(dest.lock !=0)){        //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
             while(dest.case!= nullptr){                     //si elle est occupé
                 pthread_cond_wait(dest.cond, dest.lock);    //on dort et on relache le mutex

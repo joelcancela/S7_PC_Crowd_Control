@@ -42,6 +42,11 @@ public:
 	 */
 	Entity* getEntityAt(int, int);
 
+	/**
+	 * Get the cell at a given coordinates
+	 */
+	Cell* getCellAt(int, int);
+
     /**
      * Gets the current number of personnes associated to this grid
      * @return

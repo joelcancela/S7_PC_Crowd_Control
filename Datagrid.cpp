@@ -32,7 +32,7 @@ Datagrid::Datagrid(unsigned int origin_x, unsigned int origin_y, unsigned int se
             x = rand() % (GRID_SIZE_X / shapeRatio);
             y = rand() % (GRID_SIZE_Y / shapeRatio);
 
-            if (this->dataGrid[x][y] == nullptr) {
+            if (this->dataGrid[x][y]->isEmpty()) {
 
                 // Create new Personne
                 p = new Personne(x + origin_x, y + origin_y, this);
@@ -86,4 +86,16 @@ void Datagrid::fill_grid(Entity *e) {
             this->setEntityAt(pos[0] + x, pos[1] + y, e);
         }
     }
+}
+
+Cell *Datagrid::getCellAt(int x, int y) {
+
+    // Patch real coordinates
+    x -= this->origin_x;
+    y -= this->origin_y;
+
+    if (x >= 0 && y >= 0) {
+        return dataGrid[x][y];
+    }
+    return nullptr;
 }

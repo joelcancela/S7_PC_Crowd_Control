@@ -119,3 +119,7 @@ void Personne::updateGrid(Datagrid * d) {
     }
     this->datagrid = d;
 }
+
+Datagrid *Personne::getDatagrid() {
+    return datagrid;
+}
