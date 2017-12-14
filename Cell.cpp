@@ -13,13 +13,18 @@ void Cell::setEntity(Entity *e) {
 }
 
 pthread_cond_t *Cell::getCond() {
-    return this->cond;
+    return &this->cond;
 }
 
 pthread_mutex_t *Cell::getMutex() {
-    return this->mutex;
+    return &this->mutex;
 }
 
 bool Cell::isEmpty() {
     return this->wrapped_entity == nullptr;
+}
+
+Cell::Cell() {
+    this->mutex = PTHREAD_MUTEX_INITIALIZER;
+    this->cond = PTHREAD_COND_INITIALIZER;
 }
