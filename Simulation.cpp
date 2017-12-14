@@ -45,28 +45,33 @@ void *tick(void *arguments) {
     while (!p->has_escaped()) {
 
         // Fetch future coordinates
-        const std::vector<int> &dest = p->getNextDestination();
+        std::vector<int> dest = p->getNextDestination(); // THIS IS FAIL ?
 
         // Fetch associated mutex of the given coordinates
-        Cell* c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
-        pthread_mutex_t* mutex = c->getMutex();
-        pthread_cond_t* cond = c->getCond();
+        Cell *c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
+        pthread_mutex_t *mutex = c->getMutex();
+        pthread_cond_t *cond = c->getCond();
 
 
-        while(pthread_mutex_trylock(mutex) != 0) {          //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
-
-            while (!c->isEmpty()){                 //si elle est occupé
+        while (pthread_mutex_trylock(mutex) != 0) {          //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
+            std::cout << "Taking mutex" << std::endl;
+            while (!c->isEmpty()) {                 //si elle est occupé
+                std::cout << "sleeping" << std::endl;
                 pthread_cond_wait(cond, mutex);    //on dort et on relache le mutex
             }
 
             //elle est pas occupé
-
+            std::cout << "moving" << std::endl;
             p->move();                      //on bouge
+            std::cout << "moved" << std::endl;
             pthread_mutex_unlock(mutex);    //on relache le mutex
+            std::cout << "rel mutex" << std::endl;
             pthread_cond_broadcast(cond);   // on reveille les autres threads qui attendaient cette case
-
+            std::cout << "bc" << std::endl;
         }
+        std::cout << "out of inner while" << std::endl;
     }
+    std::cout << "OUTTTTTTTTTTTT" << std::endl;
     std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
     return nullptr;
 }
