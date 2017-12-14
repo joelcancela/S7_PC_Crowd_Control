@@ -48,18 +48,22 @@ void *tick(void *arguments) {
         const std::vector<int> &dest = p->getNextDestination();
 
         // Fetch associated mutex of the given coordinates
-        pthread_mutex_t mutex = *p->getDatagrid()->getCellAt(dest[0], dest[1])->getMutex();
-        pthread_cond_t cond = *p->getDatagrid()->getCellAt(dest[0], dest[1])->getCond();
+        Cell* c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
+        pthread_mutex_t* mutex = c->getMutex();
+        pthread_cond_t* cond = c->getCond();
 
 
-        while(pthread_mutex_trylock(dest.lock !=0)){        //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
-            while(dest.case!= nullptr){                     //si elle est occupé
-                pthread_cond_wait(dest.cond, dest.lock);    //on dort et on relache le mutex
+        while(pthread_mutex_trylock(mutex) != 0) {          //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
+
+            while (!c->isEmpty()){                 //si elle est occupé
+                pthread_cond_wait(cond, mutex);    //on dort et on relache le mutex
             }
+
             //elle est pas occupé
-            p->move();                                      //on bouge
-            pthread_mutex_unlock(dest.lock);                //on relache le mutex
-            pthread_cond_broadcast(dest.cond);              // on reveille les autres threads qui attendaient cette case
+
+            p->move();                      //on bouge
+            pthread_mutex_unlock(mutex);    //on relache le mutex
+            pthread_cond_broadcast(cond);   // on reveille les autres threads qui attendaient cette case
 
         }
     }
