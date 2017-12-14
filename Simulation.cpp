@@ -7,6 +7,7 @@ void *tick_four(void *arguments);
 
 static bool ended = false;
 static pthread_mutex_t lock_grid = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_blocked = PTHREAD_COND_INITIALIZER;
 struct arg_struct {
     Simulation *instance;
     int thread_number;
@@ -61,7 +62,6 @@ void *tick(void *arguments) {
         }
 
         pthread_mutex_t *mutex = c->getMutex();
-        pthread_cond_t *cond = c->getCond();
 
         //on essaie de prendre le lock pour consulter l'état de la case ou on veut aller
         pthread_mutex_lock(mutex);
@@ -70,14 +70,14 @@ void *tick(void *arguments) {
         while (!c->isEmpty()) {
 
             //on dort et on relache le mutex
-            pthread_cond_wait(cond, mutex);
+            pthread_cond_wait(&cond_blocked, mutex);
         }
 
         //on bouge
         p->move();
 
         // on reveille les autres threads qui attendaient cette case
-        pthread_cond_broadcast(cond);
+        pthread_cond_broadcast(&cond_blocked);
 
         //on relache le mutex
         pthread_mutex_unlock(mutex);
