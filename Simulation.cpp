@@ -1,5 +1,5 @@
 #include "Simulation.h"
-#include "Personne.h"
+#include "Command.h"
 
 void *tick(void *arguments);
 
@@ -41,6 +41,7 @@ void *tick(void *arguments) {
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
     std::vector<int> dest;
+
     //Tant que la personne n'est pas sortie
     while (!p->has_escaped()) {
 
@@ -53,11 +54,29 @@ void *tick(void *arguments) {
         Cell *c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
 
         if (c == nullptr) {
-            // The person is about to escape on the next tick
-            // Force move
-            p->move();
-            std::cout << "fail num:(" << nb << ")" << std::endl;
-            break;
+
+            // The future destination cell is not in the grid
+            // Two possibilities :
+            // - the person has to change its grid to reach the new cell
+            // - the person has reached the escape point
+
+            if (Command::is_an_escape_zone(dest[0], dest[1])) {
+                p->move();
+                break;
+            }
+            else {
+                // Compute next grid
+                Datagrid* d = instance->getNextDatagrid(p);
+                if (d == nullptr) {
+                    std::cout << "FUCKKKKKKKKKKKKKKKK" << std::endl;
+                    std::cout << "FATAL ERROR" << std::endl;
+                    break;
+                }
+                p->updateGrid(d);
+
+                // Reloop
+                continue;
+            }
         }
 
         pthread_mutex_t *mutex = c->getMutex();
@@ -185,5 +204,27 @@ std::vector<Entity *> Simulation::get_vPersonnes() {
 
 bool Simulation::isRunning() {
     return !ended;
+}
+
+Datagrid *Simulation::getNextDatagrid(Personne *p) {
+
+    std::vector<int> dest = p->getNextDestination();
+
+    if (Command::is_oob(dest[0], dest[1], p->getDatagrid())) {
+        if (this->dA->getCellAt(dest[0], dest[1]) != nullptr) {
+            return this->dA;
+        }
+        if (this->dB->getCellAt(dest[0], dest[1]) != nullptr) {
+            return this->dB;
+        }
+        if (this->dC->getCellAt(dest[0], dest[1]) != nullptr) {
+            return this->dC;
+        }
+        if (this->dD->getCellAt(dest[0], dest[1]) != nullptr) {
+            return this->dD;
+        }
+    }
+
+    return nullptr; // not found
 }
 
