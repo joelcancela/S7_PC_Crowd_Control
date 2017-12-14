@@ -34,7 +34,6 @@ Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_tim
 
 // Compute the next frame
 void *tick(void *arguments) {
-    //pthread_mutex_lock(&simulation_mutex);
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
@@ -45,21 +44,14 @@ void *tick(void *arguments) {
         p->move();
         int new_x = p->get_x();
         int new_y = p->get_y();
-        if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
-//            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
-            //pthread_cond_broadcast(&cond_var);
+        if ((old_x == new_x) && (old_y == new_y)) {
             while (p->getNextDestination()[2] == -1) {
-                //usleep(1);
-                //pthread_cond_wait(&cond_var, &simulation_mutex);
             }
-//            std::cout << "Thread #" << nb << " id:" << pthread_self() << " se reveille" << std::endl;;
         } else {
             std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplacé " << p->to_string() << std::endl;
         }
     }
     std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
-    //pthread_cond_broadcast(&cond_var);
-    //pthread_mutex_unlock(&simulation_mutex);
     return nullptr;
 }
 
@@ -86,6 +78,7 @@ void Simulation::start() {
         }
         ended = true;
     }
+
 }
 
 std::vector<Entity *> Simulation::get_vPersonnes() {
@@ -110,6 +103,6 @@ std::vector<Entity *> Simulation::get_vPersonnes() {
 }
 
 bool Simulation::isRunning() {
-    return ended;
+    return !ended;
 }
 
