@@ -14,7 +14,7 @@ struct arg_struct {
 
 };
 
-Simulation::Simulation( int people, int four_threads_cond, int bench_time_cond) {
+Simulation::Simulation(int people, int four_threads_cond, int bench_time_cond) {
     // Update simulation properties
     this->people = people;
     this->four_threads_cond = four_threads_cond;
@@ -129,11 +129,34 @@ void *tick_four(void *arguments) {//TODO 4 files d'attente boucle sur les person
     while (grid->get_vPersonnes().size() != 0) {
         for (int i = 0; i < grid->get_vPersonnes().size(); i++) {
             Personne *p = dynamic_cast<Personne *>(grid->get_vPersonnes()[i]);
-            int old_x = p->get_x();
-            int old_y = p->get_y();
-            //p->move;
-            int new_x = p->get_x();
-            int new_y = p->get_y();
+            // Fetch associated mutex of the given coordinates
+            std::vector<int> dest = p->getNextDestination();
+            Cell *c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
+
+            if (c == nullptr) {
+
+                // The future destination cell is not in the grid
+                // Two possibilities :
+                // - the person has to change its grid to reach the new cell
+                // - the person has to reach the escape point
+
+                if (Command::is_an_escape_zone(dest[0], dest[1])) {
+                    p->move();
+                    break;
+                } else {
+                    // Compute next grid
+                    Datagrid *d = instance->getNextDatagrid(p);
+                    if (d == nullptr) {
+                        std::cout << "FUCKKKKKKKKKKKKKKKK" << std::endl;
+                        std::cout << "FATAL ERROR" << std::endl;
+                        break;
+                    }
+                    p->updateGrid(d);
+
+                    // Reloop
+                    continue;
+                }
+            }
             if (p->has_escaped()) {
                 grid->get_vPersonnes().erase(grid->get_vPersonnes().begin() + i);
                 std::cout << "!!!!!!!Thread #" << nb << " ma personne est sortie!!!!!!!" << std::endl;
@@ -172,7 +195,7 @@ void *tick_four(void *arguments) {//TODO 4 files d'attente boucle sur les person
             // Reloop
             continue;
         }
-    }
+
 
     */
 
