@@ -15,7 +15,6 @@ class Cell {
     Entity* wrapped_entity = nullptr;
 
     pthread_mutex_t mutex;
-    pthread_cond_t cond;
 
 public:
     Cell();
@@ -35,11 +34,6 @@ public:
      * @param e
      */
     void setEntity(Entity*);
-    /**
-     * Get pthread_cond_t
-     * @return
-     */
-    pthread_cond_t* getCond();
     /**
      * Get pthread_cond_t
      * @return

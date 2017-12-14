@@ -12,10 +12,6 @@ void Cell::setEntity(Entity *e) {
     this->wrapped_entity = e;
 }
 
-pthread_cond_t *Cell::getCond() {
-    return &this->cond;
-}
-
 pthread_mutex_t *Cell::getMutex() {
     return &this->mutex;
 }
@@ -26,5 +22,4 @@ bool Cell::isEmpty() {
 
 Cell::Cell() {
     this->mutex = PTHREAD_MUTEX_INITIALIZER;
-    this->cond = PTHREAD_COND_INITIALIZER;
 }
