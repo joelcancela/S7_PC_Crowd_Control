@@ -16,10 +16,10 @@ int Entity::get_y() {
 	return this->pos_y;
 }
 
-unsigned int Entity::get_size_x() {
+ int Entity::get_size_x() {
 	return this->size_x;
 }
-unsigned int Entity::get_size_y() {
+ int Entity::get_size_y() {
 	return this->size_y;
 }
 

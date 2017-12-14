@@ -1,6 +1,6 @@
 #include "Obstacle.h"
 
-Obstacle::Obstacle(unsigned int position_x, unsigned int position_y)
+Obstacle::Obstacle(int position_x, int position_y)
 {
 	this->pos_x = position_x;
 	this->pos_y = position_y;

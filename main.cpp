@@ -65,16 +65,16 @@ void crowd_control_draw_entity(
     Simulation* simulation,
     Entity* e) {
 
-    std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
+    std::vector< int> pos(2);	// Position of the obstacle on the grid
     pos[0] = e->get_x() * ZOOM_FACTOR;
     pos[1] = e->get_y() * ZOOM_FACTOR;
 
-    std::vector<unsigned int> size(2);	// Size of the obstacle
+    std::vector< int> size(2);	// Size of the obstacle
     size[0] = e->get_size_x() * ZOOM_FACTOR;
     size[1] = e->get_size_y() * ZOOM_FACTOR;
 
-    for (unsigned int x = 0; x < size[0]; ++x) {
-        for (unsigned int y = 0; y < size[1]; ++y) {
+    for ( int x = 0; x < size[0]; ++x) {
+        for ( int y = 0; y < size[1]; ++y) {
             SDL_RenderDrawPoint(renderer, pos[0] + x + 2, pos[1] + y + 2);
         }
     }
@@ -87,7 +87,7 @@ void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation
     SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
     std::vector<Entity*> obstacles = simulation->get_vObstacles();
 
-    for (unsigned int i = 0; i < obstacles.size(); ++i) {
+    for ( int i = 0; i < obstacles.size(); ++i) {
         crowd_control_draw_entity(renderer, simulation, obstacles[i]);
     }
 
@@ -101,7 +101,7 @@ void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation
     SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
     std::vector<Entity*> personnes = simulation->get_vPersonnes();
 
-    for (unsigned int i = 0; i < personnes.size(); ++i) {
+    for ( int i = 0; i < personnes.size(); ++i) {
         crowd_control_draw_entity(renderer, simulation, personnes[i]);
     }
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
     srand(time(nullptr));                                                        // RNG
     bool end_of_simulation = false;                                            // Main loop
     std::cout << "[Info] Initialization...";
-    Simulation *simu = new Simulation(static_cast<unsigned int>(people), four_threads,
+    Simulation *simu = new Simulation(static_cast< int>(people), four_threads,
                                       bench_time);        // Simulation handle
 
 #ifdef W_UI

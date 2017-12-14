@@ -1,7 +1,7 @@
 #include "Datagrid.h"
 #include "Personne.h"
 
-Datagrid::Datagrid(unsigned int origin_x, unsigned int origin_y, unsigned int seed, unsigned int people, int shapeRatio) {
+Datagrid::Datagrid(int origin_x, int origin_y, int seed, int people, int shapeRatio) {
 
     // Set grid origin
     this->origin_x = origin_x;
@@ -62,6 +62,7 @@ void Datagrid::setEntityAt(int x, int y, Entity* e) {
     }
 }
 
+
 Entity* Datagrid::getEntityAt(int x, int y) {
 
     // Patch real coordinates
@@ -70,6 +71,18 @@ Entity* Datagrid::getEntityAt(int x, int y) {
 
     if (x >= 0 && y >= 0) {
         return dataGrid[x][y]->getEntity();
+    }
+    return nullptr;
+}
+
+Cell *Datagrid::getCellAt(int x, int y) {
+
+    // Patch real coordinates
+    x -= this->origin_x;
+    y -= this->origin_y;
+
+    if (x >= 0 && y >= 0) {
+        return dataGrid[x][y];
     }
     return nullptr;
 }
@@ -83,25 +96,21 @@ void Datagrid::fill_grid(Entity *e) {
     pos[0] = e->get_x();
     pos[1] = e->get_y();
 
-    std::vector<unsigned int> size(2);
+    std::vector< int> size(2);
     size[0] = e->get_size_x();
     size[1] = e->get_size_y();
 
-    for (unsigned int x = 0; x < size[0]; ++x) {
-        for (unsigned int y = 0; y < size[1]; ++y) {
+    for ( int x = 0; x < size[0]; ++x) {
+        for ( int y = 0; y < size[1]; ++y) {
             this->setEntityAt(pos[0] + x, pos[1] + y, e);
         }
     }
 }
 
-Cell *Datagrid::getCellAt(int x, int y) {
+int Datagrid::getOrigin_x() const {
+    return origin_x;
+}
 
-    // Patch real coordinates
-    x -= this->origin_x;
-    y -= this->origin_y;
-
-    if (x >= 0 && y >= 0) {
-        return dataGrid[x][y];
-    }
-    return nullptr;
+int Datagrid::getOrigin_y() const {
+    return origin_y;
 }

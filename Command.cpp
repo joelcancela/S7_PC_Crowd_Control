@@ -1,9 +1,9 @@
 #include "Command.h"
 
-bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* p, Datagrid *subject) {
+bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* p, Datagrid *grid) {
 
 	// fetch entity pointer
-	Entity* e = subject->getEntityAt(x, y);
+	Entity* e = grid->getEntityAt(x, y);
 	if (e == nullptr) {
 		return false; // This should never happen
 	}
@@ -16,19 +16,16 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* 
 		e->set_y(shifted_y);
 		
 		// remove from the dataModel
-		subject->setEntityAt(x, y, nullptr);
+		grid->setEntityAt(x, y, nullptr);
 		return true;
 	}
 
 	// test if the shifted point is available
-	if (subject->getEntityAt(shifted_x, shifted_y) != nullptr) {
+	if (grid->getEntityAt(shifted_x, shifted_y) != nullptr) {
 		return false;
 	}
 
-    // TODO : implement here the grid change.
-    // We have to find the condition and the correct grid given
-
-	if (is_oob(shifted_x, shifted_y)) {
+	if (is_oob(shifted_x, shifted_y, grid)) {
 		return false;
 	}
 
@@ -37,8 +34,8 @@ bool Command::shared_exec(int x, int y, int shifted_x, int shifted_y, Personne* 
 	e->set_y(shifted_y);
 
 	// move entity to the new position
-	subject->setEntityAt(x, y, nullptr);
-	subject->setEntityAt(shifted_x, shifted_y, e);
+	grid->setEntityAt(x, y, nullptr);
+	grid->setEntityAt(shifted_x, shifted_y, e);
 	return true;
 }
 
@@ -73,8 +70,11 @@ bool Command::is_an_escape_zone(int x, int y) {
 	return false;
 }
 
-bool Command::is_oob(int x, int y) {
-	if (x < 0 || y < 0) {
+bool Command::is_oob(int x, int y, Datagrid* d) {
+	if (x < d->getOrigin_x()) {
+		return true;
+	}
+	if (y < d->getOrigin_y()) {
 		return true;
 	}
 	return false;

@@ -11,8 +11,8 @@ class Datagrid {
 private:
 
 	// Grid absolute origin point
-	unsigned origin_x = 0;
-	unsigned origin_y = 0;
+	int origin_x = 0;
+    int origin_y = 0;
 
 	// Spacial container
 	Cell* dataGrid[GRID_SIZE_X][GRID_SIZE_Y] = { nullptr };
@@ -22,7 +22,7 @@ private:
 	Obstacle* obstacle;				// Obstacle handle
 
 public:
-	Datagrid(unsigned int, unsigned int, unsigned int, unsigned int, int);
+	Datagrid(int, int, int, int, int);
 
 	/**
 	 * Set entity at an absolute position among the grids
@@ -52,6 +52,10 @@ public:
      * @return
      */
     std::vector<Entity *> get_vPersonnes();
+
+    int getOrigin_x() const;
+
+    int getOrigin_y() const;
 
 private:
 

@@ -13,7 +13,7 @@ struct arg_struct {
 
 };
 
-Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_time_cond) {
+Simulation::Simulation( int people, int four_threads_cond, int bench_time_cond) {
     // Update simulation properties
     this->people = people;
     this->four_threads_cond = four_threads_cond;
@@ -48,6 +48,7 @@ void *tick(void *arguments) {
         pthread_mutex_lock(&lock_grid);
         dest = p->getNextDestination();
         pthread_mutex_unlock(&lock_grid);
+
         // Fetch associated mutex of the given coordinates
         Cell *c = p->getDatagrid()->getCellAt(dest[0], dest[1]);
 

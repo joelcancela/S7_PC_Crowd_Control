@@ -35,7 +35,7 @@ public:
     Datagrid* dC;
     Datagrid* dD;
 
-	Simulation(unsigned int people, int four_threads_cond, int bench_time_cond);
+	Simulation(int people, int four_threads_cond, int bench_time_cond);
 	std::vector<Entity*> get_vPersonnes();
 	void start();
 	bool isRunning();

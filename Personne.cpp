@@ -42,13 +42,14 @@ std::vector<int> Personne::getNextDestination() {
     pos_w[2] = 2;
 
     // IF NORTH-WEST IS AVAILABLE
-    if (!Command::is_oob(pos_nw[0], pos_nw[1]) && datagrid->getEntityAt(pos_nw[0], pos_nw[1]) == nullptr) {
+    if (!Command::is_oob(pos_nw[0], pos_nw[1], datagrid) && datagrid->getEntityAt(pos_nw[0], pos_nw[1]) == nullptr) {
+
         // GO NORTH-WEST
         return pos_nw;
     }
 
     // IF NORTH IS OUT OF ARENA or OCCUPIED
-    if (Command::is_oob(pos_n[0], pos_n[1]) || (datagrid->getEntityAt(pos_n[0], pos_n[1]) != nullptr)) {
+    if (Command::is_oob(pos_n[0], pos_n[1], datagrid) || (datagrid->getEntityAt(pos_n[0], pos_n[1]) != nullptr)) {
 
         if (datagrid->getEntityAt(pos_w[0], pos_w[1]) == nullptr) {
             // GO LEFT
@@ -57,7 +58,7 @@ std::vector<int> Personne::getNextDestination() {
     }
 
     // IF WEST IS OUT OF ARENA or OCCUPIED
-    if (Command::is_oob(pos_w[0], pos_w[1]) || (datagrid->getEntityAt(pos_w[0], pos_w[1]) != nullptr)) {
+    if (Command::is_oob(pos_w[0], pos_w[1], datagrid) || (datagrid->getEntityAt(pos_w[0], pos_w[1]) != nullptr)) {
 
         if (datagrid->getEntityAt(pos_n[0], pos_n[1]) == nullptr) {
             // GO NORTH
@@ -93,7 +94,6 @@ void Personne::move() {
     c->exec(this->get_x(), this->get_y(), this, this->datagrid);
 
     delete c;
-    c = nullptr;
 
     // Test if we have escaped
     if (Command::is_an_escape_zone(this->get_x(), this->get_y())) {

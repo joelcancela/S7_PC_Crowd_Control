@@ -54,7 +54,7 @@ public:
 	 *
 	 * @return
 	 */
-	static bool is_oob(int, int);
+	static bool is_oob(int, int, Datagrid*);
 };
 
 // North-West
