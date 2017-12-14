@@ -2,6 +2,7 @@
 #include "Personne.h"
 
 void *tick(void *arguments);
+void *tick_four(void *arguments);
 
 static pthread_mutex_t simulation_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
@@ -10,6 +11,7 @@ static bool ended = false;
 struct arg_struct {
     Simulation *instance;
     int thread_number;
+
 };
 
 Simulation::Simulation(unsigned int people, int four_threads_cond, int bench_time_cond) {
@@ -65,20 +67,69 @@ void create_thread(pthread_t thread_persons[], int i, Simulation *pSimulation) {
     }
 }
 
+void create_four_thread(pthread_t thread_persons[], int i, Simulation *pSimulation) {
+    auto *args = new arg_struct();
+    args->instance = pSimulation;
+    args->thread_number = i;
+    int error = pthread_create(&thread_persons[i], NULL, &tick_four, (void *) args);
+    if (error) {
+        std::cout << "Error when creating threads";
+    }
+}
+
+void *tick_four(void *arguments) {//TODO
+    struct arg_struct *args = (struct arg_struct *) arguments;
+    int nb = args->thread_number;
+    Simulation *instance = args->instance;
+    Datagrid *grid = nullptr;
+    if (nb == 0) {
+        grid = instance->dA;
+    } else if (nb == 1) {
+        grid = instance->dB;
+    } else if (nb == 2) {
+        grid = instance->dC;
+    } else if (nb == 3) {
+        grid = instance->dD;
+    }
+
+    while (grid->get_vPersonnes().size() != 0) {
+        for (int i = 0; i < grid->get_vPersonnes().size(); i++) {
+            Personne *p = dynamic_cast<Personne *>(grid->get_vPersonnes()[i]);
+            int old_x = p->get_x();
+            int old_y = p->get_y();
+            //p->move;
+            int new_x = p->get_x();
+            int new_y = p->get_y();
+            if (p->has_escaped()) {
+                grid->get_vPersonnes().erase(grid->get_vPersonnes().begin() + i);
+                std::cout << "!!!!!!!Thread #" << nb << " ma personne est sortie!!!!!!!" << std::endl;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 void Simulation::start() {
     if (four_threads_cond) {
-        //TODO split
+        pthread_t thread_persons[4];
+        for (int i = 0; i < 4; ++i) {
+            create_four_thread(thread_persons, i, this);
+        }
+        for (int j = 0; j < 4; j++) {
+            pthread_join(thread_persons[j], NULL);
+        }
     } else {
         pthread_t thread_persons[(int) people];
-        for (int i = 0; i < people; ++i) {
+        for (int i = 0; i < people; ++i) {//0-255
             create_thread(thread_persons, i, this);
         }
         for (int j = 0; j < people; j++) {
             pthread_join(thread_persons[j], NULL);
         }
-        ended = true;
     }
 
+    ended = true;
 }
 
 std::vector<Entity *> Simulation::get_vPersonnes() {

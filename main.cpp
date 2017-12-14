@@ -149,7 +149,8 @@ int main(int argc, char *argv[]) {
     srand(time(nullptr));                                                        // RNG
     bool end_of_simulation = false;                                            // Main loop
     std::cout << "[Info] Initialization...";
-    Simulation *simu = new Simulation(static_cast<unsigned int>(people), four_threads, bench_time);        // Simulation handle
+    Simulation *simu = new Simulation(static_cast<unsigned int>(people), four_threads,
+                                      bench_time);        // Simulation handle
 
 #ifdef W_UI
 
