@@ -103,18 +103,17 @@ void *tick(void *arguments) {
         int new_x = p->get_x();
         int new_y = p->get_y();
         if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
-            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
+//            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
             pthread_cond_broadcast(&cond_var);
             while (p->getNextDestination(instance->dataGrid) != nullptr) {
-//                usleep(1);
                 pthread_cond_wait(&cond_var, &simulation_mutex);
             }
-            std::cout << "Thread #" << nb << " id:" << pthread_self() << " se reveille" << std::endl;;
+//            std::cout << "Thread #" << nb << " id:" << pthread_self() << " se reveille" << std::endl;;
         } else {
-            std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
+//            std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
         }
     }
-    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
+//    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
     pthread_cond_broadcast(&cond_var);
     pthread_mutex_unlock(&simulation_mutex);
     return nullptr;
