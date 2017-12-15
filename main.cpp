@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
@@ -195,16 +196,16 @@ int main(int argc, char *argv[]) {
 
     int tick_count = 0;
     if (bench_time) {
-        time_t start_clock, end_clock;//CLOCK
-        time(&start_clock);
+        struct timeval start_clock, end_clock;//CLOCK
+        gettimeofday(&start_clock, NULL);
         clock_t begin_cpu = clock();//CPU
         simu->start();
         clock_t end_cpu = clock();
-        time(&end_clock);
-        double time_spent = (double) (end_cpu - begin_cpu) / CLOCKS_PER_SEC;
-        double seconds_since_start = difftime(end_clock, start_clock);
-        printf("time spent CPU: %f s\n", time_spent);
-        printf("clock time: %gs \n", seconds_since_start);
+        gettimeofday(&end_clock, NULL);
+        double time_spent = (double) (end_cpu - begin_cpu) / CLOCKS_PER_SEC*1000;
+        double seconds_since_start = end_clock.tv_usec - start_clock.tv_usec;
+        printf("time spent CPU: %f ms\n", time_spent);
+        printf("clock time: %gms \n", seconds_since_start/1000);
 
     } else {
         simu->start();
