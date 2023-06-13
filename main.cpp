@@ -2,7 +2,6 @@
 #include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
-
 #ifdef W_UI
 
 #define ZOOM_FACTOR 2
@@ -121,25 +120,25 @@ int main(int argc, char *argv[]) {
     while ((opt = getopt(argc, argv, "p:t:m")) != -1) {
         switch (opt) {
             case 'p':
-                //std::cout << "Option p" << std::endl;
+                std::cout << "Option p" << std::endl;
                 people = pow(2.0, strtod(optarg, NULL));
                 if (people < 1 || people > 512) {
                     std::cerr << "p must be between 0 & 9";
                     return 1;
                 }
-                //std::cout << people;
+                std::cout << people;
                 break;
             case 't':
-                //std::cout << "Option t" << optarg << std::endl;
+                std::cout << "Option t" << optarg << std::endl;
                 four_threads = atoi(optarg);
                 if (four_threads < 0 || four_threads > 1) {
                     std::cerr << "t must be either 0 or 1";
                     return 1;
                 }
-                //std::cout<<four_threads;
+                std::cout<<four_threads;
                 break;
             case 'm':
-                //std::cout << "Option m" << std::endl;
+                std::cout << "Option m" << std::endl;
                 bench_time = 1;
                 break;
             default:
@@ -250,7 +249,7 @@ int main(int argc, char *argv[]) {
         SDL_RenderPresent(renderer);
 
         // Give us time to see the window changes.
-        SDL_Delay(10);
+        SDL_Delay(1000);
 
 
 

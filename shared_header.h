@@ -8,6 +8,8 @@
 #include <queue>
 #include <map>
 #include <cmath>
+#include <unistd.h>
+#include <iostream>
 
 #ifdef linux
 #include <pthread.h>

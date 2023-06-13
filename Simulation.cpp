@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include "Simulation.h"
 
 void *tick(void *arguments);
@@ -91,31 +92,30 @@ void Simulation::fill_grid(Entity *e) {
 
 // Compute the next frame
 void *tick(void *arguments) {
-    pthread_mutex_lock(&simulation_mutex);
     struct arg_struct *args = (struct arg_struct *) arguments;
     int nb = args->thread_number;
     Simulation *instance = args->instance;
     Personne *p = dynamic_cast<Personne *>(instance->get_vPersonnes()[nb]);
     while (!p->has_escaped()) {
+        pthread_mutex_lock(&simulation_mutex);
         int old_x = p->get_x();
         int old_y = p->get_y();
         p->move();
         int new_x = p->get_x();
         int new_y = p->get_y();
+        pthread_mutex_unlock(&simulation_mutex);
         if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
-//            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
-            pthread_cond_broadcast(&cond_var);
-            while (p->getNextDestination(instance->dataGrid) != nullptr) {
+            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
+            if (p->getNextDestination(instance->dataGrid) != nullptr) {
                 pthread_cond_wait(&cond_var, &simulation_mutex);
             }
-//            std::cout << "Thread #" << nb << " id:" << pthread_self() << " se reveille" << std::endl;;
+            std::cout << "Thread #" << nb <<  " se reveille" << std::endl;;
         } else {
-//            std::cout << "Thread #" << nb << " id:" << pthread_self() << " a deplace " << p->to_string() << std::endl;
+            std::cout << "Thread #" << nb <<  " a deplace " << p->to_string() << std::endl;
         }
+        pthread_cond_broadcast(&cond_var);
     }
-//    std::cout << "!!!!!!!Thread #" << nb << " id:" << pthread_self() << " ma personne est sortie!!!!!!!" << std::endl;
-    pthread_cond_broadcast(&cond_var);
-    pthread_mutex_unlock(&simulation_mutex);
+    std::cout << "!!!!!!!Thread #" << nb <<  " ma personne est sortie!!!!!!!" << std::endl;
     return nullptr;
 }
 
@@ -129,7 +129,7 @@ void create_thread(pthread_t thread_persons[], int i, Simulation *pSimulation) {
     }
 }
 
-void Simulation::start() {
+int Simulation::start() {
     if (four_threads_cond) {
         //TODO split
     } else {
@@ -147,6 +147,7 @@ void Simulation::start() {
         }
 
     }
+    return 0;
 }
 
 Simulation::~Simulation() {

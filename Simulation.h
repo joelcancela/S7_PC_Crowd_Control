@@ -24,7 +24,7 @@ public:
 	void fill_grid(Entity* e);
 	std::vector<Entity*> get_vObstacles();
 	std::vector<Entity*> get_vPersonnes();
-	void start();
+	int start();
 	bool isRunning();
 
 	Datagrid* dataGrid;

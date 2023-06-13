@@ -16,14 +16,13 @@ set(SOURCE_FILES
         shared_header.h
         Simulation.cpp
         Simulation.h)
-if (UNIX AND NOT APPLE)#sudo apt-get install libsdl2-dev
-    #add_definitions(-DW_UI)
-    INCLUDE(FindPkgConfig)
-    PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-    INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
+if (NOT APPLE)#sudo apt-get install libsdl2-dev
+    add_definitions(-DW_UI)
+    set(SDL2_DIR SDL2-2.26.5/cmake)
+    find_package(SDL2 REQUIRED)
 endif ()
 add_executable(crowdControl ${SOURCE_FILES})
-if (UNIX AND NOT APPLE)
+if (NOT APPLE)
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES})
 endif ()
 find_package(Threads REQUIRED)
@@ -34,3 +33,4 @@ endif ()
 if (CMAKE_THREAD_LIBS_INIT)
     target_link_libraries(crowdControl "${CMAKE_THREAD_LIBS_INIT}")
 endif ()
+# Then copy manually all SDLs dll in cmake-build-default

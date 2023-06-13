@@ -46,6 +46,7 @@ void Personne::move() {
             }
         }
     }
+    //sleep(1);
 }
 
 std::string Personne::to_string() {
