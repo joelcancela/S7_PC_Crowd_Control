@@ -1,4 +1,5 @@
 #include "Personne.h"
+#include <unistd.h>
 
 Personne::Personne(int position_x, int position_y, std::queue<Command *> path) {
     this->pos_x = position_x;
@@ -46,7 +47,7 @@ void Personne::move() {
             }
         }
     }
-    //sleep(1);
+    usleep(500);
 }
 
 std::string Personne::to_string() {

@@ -105,15 +105,14 @@ void *tick(void *arguments) {
         int new_y = p->get_y();
         pthread_mutex_unlock(&simulation_mutex);
         if ((old_x == new_x) && (old_y == new_y)) {//We just blocked
-            std::cout << "Blocked @" << new_x << ", " << new_y << std::endl;
+            std::cout << "Blocked @" << new_x << ", " << new_y << "-----------------------" << std::endl;
             if (p->getNextDestination(instance->dataGrid) != nullptr) {
                 pthread_cond_wait(&cond_var, &simulation_mutex);
             }
-            std::cout << "Thread #" << nb <<  " se reveille" << std::endl;;
         } else {
-            std::cout << "Thread #" << nb <<  " a deplace " << p->to_string() << std::endl;
+            std::cout << "Thread #" << nb <<  " a deplacé " << p->to_string() << std::endl;
+            pthread_cond_broadcast(&cond_var);
         }
-        pthread_cond_broadcast(&cond_var);
     }
     std::cout << "!!!!!!!Thread #" << nb <<  " ma personne est sortie!!!!!!!" << std::endl;
     return nullptr;

@@ -5,3 +5,5 @@
 #endif
 
 #include <ctime>
+
+int event_thread(void *arg);

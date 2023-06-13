@@ -2,11 +2,14 @@
 #include "main.h"
 #include "shared_header.h"
 #include "Simulation.h"
+
 #ifdef W_UI
 
 #define ZOOM_FACTOR 2
 #define W_WIDTH  (GRID_SIZE_X * ZOOM_FACTOR)
 #define W_HEIGHT (GRID_SIZE_Y * ZOOM_FACTOR)
+
+Simulation *simu;
 
 /**
  * SDL Drawer for frame / border of the scene
@@ -41,7 +44,7 @@ void crowd_control_draw_borders(SDL_Renderer *renderer) {
 /**
  * SDL Drawer for the hostage escape zone
  */
-void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
+void crowd_control_draw_escape_zone(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(renderer, 11, 106, 11, 255);
 
     // TOP
@@ -62,15 +65,15 @@ void crowd_control_draw_escape_zone(SDL_Renderer* renderer) {
  * DRAW entities px by px
  */
 void crowd_control_draw_entity(
-    SDL_Renderer* renderer,
-    Simulation* simulation,
-    Entity* e) {
+        SDL_Renderer *renderer,
+        Simulation *simulation,
+        Entity *e) {
 
-    std::vector<unsigned int> pos(2);	// Position of the obstacle on the grid
+    std::vector<unsigned int> pos(2);    // Position of the obstacle on the grid
     pos[0] = e->get_x() * ZOOM_FACTOR;
     pos[1] = e->get_y() * ZOOM_FACTOR;
 
-    std::vector<unsigned int> size(2);	// Size of the obstacle
+    std::vector<unsigned int> size(2);    // Size of the obstacle
     size[0] = e->get_size_x() * ZOOM_FACTOR;
     size[1] = e->get_size_y() * ZOOM_FACTOR;
 
@@ -84,9 +87,9 @@ void crowd_control_draw_entity(
 /**
  * SDL Drawer for obstacles
  */
-void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation) {
+void crowd_control_draw_obstacles(SDL_Renderer *renderer, Simulation *simulation) {
     SDL_SetRenderDrawColor(renderer, 73, 130, 5, 255);
-    std::vector<Entity*> obstacles = simulation->get_vObstacles();
+    std::vector<Entity *> obstacles = simulation->get_vObstacles();
 
     for (unsigned int i = 0; i < obstacles.size(); ++i) {
         crowd_control_draw_entity(renderer, simulation, obstacles[i]);
@@ -98,9 +101,9 @@ void crowd_control_draw_obstacles(SDL_Renderer* renderer, Simulation* simulation
 /**
  * SDL Drawer for personnes
  */
-void crowd_control_draw_personnes(SDL_Renderer* renderer, Simulation* simulation) {
+void crowd_control_draw_personnes(SDL_Renderer *renderer, Simulation *simulation) {
     SDL_SetRenderDrawColor(renderer, 36, 36, 102, 255);
-    std::vector<Entity*> personnes = simulation->get_vPersonnes();
+    std::vector<Entity *> personnes = simulation->get_vPersonnes();
 
     for (unsigned int i = 0; i < personnes.size(); ++i) {
         crowd_control_draw_entity(renderer, simulation, personnes[i]);
@@ -135,7 +138,7 @@ int main(int argc, char *argv[]) {
                     std::cerr << "t must be either 0 or 1";
                     return 1;
                 }
-                std::cout<<four_threads;
+                std::cout << four_threads;
                 break;
             case 'm':
                 std::cout << "Option m" << std::endl;
@@ -150,14 +153,14 @@ int main(int argc, char *argv[]) {
     srand(time(NULL));                                                        // RNG
     bool end_of_simulation = false;                                            // Main loop
     std::cout << "[Info] Initialization...";
-    Simulation *simu = new Simulation(people, four_threads, bench_time);        // Simulation handle
+    simu = new Simulation(people, four_threads, bench_time);        // Simulation handle
 
 #ifdef W_UI
 
     /* SDL */
-    SDL_Window *win = nullptr;					// Main SDL window
+    SDL_Window *win = nullptr;                    // Main SDL window
     SDL_Renderer *renderer = nullptr;
-    SDL_Event sdl_event;						// SDL events
+    SDL_Event sdl_event;                        // SDL events
 
     // SDL2 init
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -201,18 +204,16 @@ int main(int argc, char *argv[]) {
         simu->start();
         clock_t end_cpu = clock();
         gettimeofday(&end_clock, NULL);
-        double time_spent = (double) (end_cpu - begin_cpu) / CLOCKS_PER_SEC*1000;
+        double time_spent = (double) (end_cpu - begin_cpu) / CLOCKS_PER_SEC * 1000;
         double seconds_since_start = end_clock.tv_usec - start_clock.tv_usec;
         printf("time spent CPU: %f ms\n", time_spent);
-        printf("clock time: %gms \n", seconds_since_start/1000);
+        printf("clock time: %gms \n", seconds_since_start / 1000);
 
-    } else {
-        simu->start();
     }
     //Unreachable for now
 #ifdef W_UI
     while (!end_of_simulation) {
-
+        SDL_Thread* threadID = SDL_CreateThread(event_thread, "LazyThread", (void*)NULL );
 
         /* START: UI SPECIFIC */
 
@@ -249,9 +250,7 @@ int main(int argc, char *argv[]) {
         SDL_RenderPresent(renderer);
 
         // Give us time to see the window changes.
-        SDL_Delay(1000);
-
-
+        SDL_Delay(100);
 
         // Check simulation state
         end_of_simulation = !simu->isRunning();
@@ -272,4 +271,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     return EXIT_SUCCESS;
+}
+
+int event_thread(void *arg) {
+    simu->start();
 }
